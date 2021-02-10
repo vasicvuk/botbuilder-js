@@ -18,7 +18,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "${formatNumber(123456.789, 1)}"
+                        "activity": "${formatNumber(123465.789, 1)}"
                     }
                 ]
             }
@@ -36,7 +36,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "123.456,8"
+            "text": "123.465,8"
         }
     ]
 }

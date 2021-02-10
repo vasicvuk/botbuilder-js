@@ -167,10 +167,6 @@ export abstract class BotAdapter {
         context: TurnContext,
         next: (revocableContext: TurnContext) => Promise<void>
     ): Promise<void> {
-        if (context && context.activity && context.activity.locale) {
-            context.locale = context.activity.locale;
-        }
-
         // Wrap context with revocable proxy
         const pContext = makeRevocable(context);
 

@@ -193,12 +193,7 @@ export class DialogContext {
      */
     public getLocale(): string
     {
-        let locale: string = undefined;
-        if (this.context.locale !== undefined && this.context.locale !== null) {
-            locale = this.context.locale;
-        }
-        
-        return locale;
+        return this.state['conversion.locale'] ?? this.state['turn.locale'];
     }
 
     /**

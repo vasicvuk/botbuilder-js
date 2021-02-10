@@ -55,9 +55,9 @@ export abstract class MultiLanguageGeneratorBase<
      * @param data Data to bind to.
      */
     public async generate(dialogContext: DialogContext, template: string, data: D): Promise<T> {
-        const targetLocale = dialogContext.context.activity.locale
-            ? dialogContext.context.activity.locale.toLocaleLowerCase()
-            : '';
+        const targetLocale = dialogContext.getLocale()
+            ?? dialogContext.context.activity.locale.toLocaleLowerCase()
+            ?? '';
 
         // priority
         // 1. local policy

@@ -36,7 +36,7 @@ describe('LGGeneratorTests', function () {
         await TestUtils.runTestScript(resourceExplorer, 'CustomizeLanguagePolicy');
     });
 
-    it('LocaleInExpr', async () => {
+    it.only('LocaleInExpr', async () => {
         await TestUtils.runTestScript(resourceExplorer, 'LocaleInExpr');
     });
 });

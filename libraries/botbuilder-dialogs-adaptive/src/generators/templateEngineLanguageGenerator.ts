@@ -64,7 +64,9 @@ export class TemplateEngineLanguageGenerator<T = unknown, D extends Record<strin
     public generate(dialogContext: DialogContext, template: string, data: D): Promise<T> {
         try {
             const lgOptions = new EvaluationOptions();
-            lgOptions.locale = dialogContext.getLocale();
+            lgOptions.locale = dialogContext.getLocale()
+            ?? dialogContext.context.activity.locale
+            ?? undefined;
             const result = this.lg.evaluateText(template, data, lgOptions);
             return Promise.resolve(result);
         } catch (e) {
