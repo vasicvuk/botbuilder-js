@@ -3,6 +3,8 @@
 
 import assert from 'assert';
 import nock from 'nock'; // eslint-disable-line import/no-extraneous-dependencies
+import type { Url } from 'url';
+import { formatHost } from './formatHost';
 
 /**
  * Registers mocha hooks for proper usage
@@ -16,9 +18,6 @@ export function mocha(): void {
 
 export type Options = {
     accessToken: string;
-    host: string;
-    path: string;
-    tenant: string;
     tokenType: string;
 };
 
@@ -32,20 +31,15 @@ export type Result = {
 /**
  * Stub Oauth flow.
  *
- * @param {Partial<Options>} options options for stubbing oauth
- * @returns {Result} helpers for stubbed oauth
+ * @param endpoint oauth endpoint to stub
+ * @param options options for stubbing oauth
+ * @returns helpers for stubbed oauth
  */
-export function stub(options: Partial<Options> = {}): Result {
-    const {
-        accessToken = 'access_token',
-        host = 'https://login.microsoftonline.com',
-        path = '/oauth2/token',
-        tenant = 'botframework.com',
-        tokenType = 'Bearer',
-    } = options;
+export function stub(endpoint: Url, options: Partial<Options> = {}): Result {
+    const { accessToken = 'access_token', tokenType = 'Bearer' } = options;
 
-    const expectation = nock(host)
-        .post((uri) => uri.indexOf(`/${tenant}${path}`) !== -1)
+    const expectation = nock(formatHost(endpoint))
+        .post(endpoint.path ?? '/')
         .reply(200, { access_token: accessToken, token_type: tokenType });
 
     const match = (scope: nock.Scope): nock.Scope => scope.matchHeader('Authorization', `${tokenType} ${accessToken}`);

@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import assert from 'assert';
 import forge from 'node-forge';
 import jwt from 'jsonwebtoken'; // eslint-disable-line import/no-extraneous-dependencies
 import nock from 'nock'; // eslint-disable-line import/no-extraneous-dependencies
-import url from 'url';
-import { assert } from 'botbuilder-stdlib';
+import type { Url } from 'url';
+import { formatHost } from './formatHost';
 import { nanoid } from 'nanoid';
-import { ok } from 'assert';
 
 /**
  * Registers mocha hooks for proper usage
@@ -19,24 +19,24 @@ export function mocha(): void {
     afterEach(() => nock.cleanAll());
 }
 
+export type Endpoints = {
+    jwks: Url;
+    oauth: Url;
+    openId: Url;
+};
+
 export type Options = {
     algorithm: string;
     bits: number;
     expiresIn: number;
-    host: string;
     issuer: string;
-    jwks: Partial<url.Url>;
-    keyId: string;
-    metadata: Partial<url.Url>;
+    keyid: string;
 };
 
 export type Result = {
     algorithm: string;
-    host: string;
     issuer: string;
-    jwks: string;
-    keyId: string;
-    metadata: string;
+    keyid: string;
     sign: (payload: Record<string, string>) => string;
     verify: () => void;
 };
@@ -47,27 +47,17 @@ const encodeBigInt = (bigInt: forge.jsbn.BigInteger): string =>
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     forge.util.encode64(forge.util.hexToBytes((bigInt as any).toString(16)));
 
-const formatHost = (url: url.Url): string => `${url.protocol}//${url.host}`;
-
 /**
  * This allows callers to stub Open ID/JWKS key fetching. In effect, this allows callers
  * to create signed JWTs in the tests that can be verified by code that fetches signing
  * keys via Open ID/JWKS spec.
  *
- * @param {Partial<Options>} options options for stubbing jwt
- * @returns {Result} helpers for stubbed jwt
+ * @param endpoints endpoints to stub
+ * @param options options for stubbing jwt
+ * @returns helpers for stubbed jwt
  */
-export function stub(options: Partial<Options> = {}): Result {
-    const {
-        algorithm = 'RS256',
-        bits = 2048,
-        expiresIn = 1000 * 60 * 5,
-        host = `https://${nanoid()}.jwt.localhost`,
-        issuer = 'iss',
-        jwks = { path: '/v1/.well-known/jwks' },
-        keyId = nanoid(),
-        metadata = { path: '/v1/.well-known/openid' },
-    } = options;
+export function stub(endpoints: Endpoints, options: Partial<Options> = {}): Result {
+    const { algorithm = 'RS256', bits = 2048, expiresIn = 1000 * 60 * 5, issuer = 'iss', keyid = nanoid() } = options;
 
     const { publicKey, privateKey } = forge.pki.rsa.generateKeyPair(bits);
 
@@ -76,32 +66,28 @@ export function stub(options: Partial<Options> = {}): Result {
             algorithm,
             expiresIn,
             issuer,
-            keyid: keyId,
+            keyid,
         });
 
-    const hostURL = url.parse(host);
-
-    const metadataURL = Object.assign({}, hostURL, metadata);
-    assert.string(metadataURL.path, ['metadata', 'path']);
-
-    const jwksURL = Object.assign({}, hostURL, jwks);
-    assert.string(jwksURL.path, ['jwks', 'path']);
-
-    const openIdExpectation = nock(formatHost(metadataURL))
-        .get(metadataURL.path)
+    const openIdExpectation = nock(formatHost(endpoints.openId))
+        .get(endpoints.openId.path ?? '/')
         .reply(200, {
+            authorization_endpoint: 'unused',
+            end_session_endpoint: 'unused',
             issuer,
-            jwks_uri: `${formatHost(jwksURL)}${jwksURL.path}`,
-        });
+            jwks_uri: `${formatHost(endpoints.jwks)}${endpoints.jwks.path ?? '/'}`,
+            token_endpoint: `${formatHost(endpoints.oauth)}${endpoints.oauth.path ?? '/'}`,
+        })
+        .persist();
 
-    const jwksExpectation = nock(formatHost(jwksURL))
-        .get(jwksURL.path)
+    const jwksExpectation = nock(formatHost(endpoints.jwks))
+        .get(endpoints.jwks.path ?? '/')
         .reply(200, {
             keys: [
                 {
                     kty: 'RSA',
                     use: 'sig',
-                    kid: keyId,
+                    kid: keyid,
                     n: encodeBigInt(publicKey.n),
                     e: encodeBigInt(publicKey.e),
                     alg: algorithm,
@@ -111,16 +97,13 @@ export function stub(options: Partial<Options> = {}): Result {
 
     return {
         algorithm,
-        host,
         issuer,
-        jwks: `${formatHost(jwksURL)}${jwks.path}`,
-        keyId,
-        metadata: `${formatHost(metadataURL)}${metadata.path}`,
+        keyid,
         sign,
         verify: (skipped = false) => {
             if (skipped) {
-                ok(!openIdExpectation.isDone(), 'expected open ID request to be skipped');
-                ok(!jwksExpectation.isDone(), 'expected jwks request to be skipped');
+                assert.ok(!openIdExpectation.isDone(), 'expected open ID request to be skipped');
+                assert.ok(!jwksExpectation.isDone(), 'expected jwks request to be skipped');
             } else {
                 openIdExpectation.done();
                 jwksExpectation.done();
