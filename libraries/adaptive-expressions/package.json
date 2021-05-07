@@ -37,12 +37,16 @@
     "x2js": "^3.4.0",
     "xml2js": "^0.4.23",
     "xmldom": "^0.5.0",
-    "xpath": "^0.0.32"
+    "xpath": "^0.0.32",
+    "terser-webpack-plugin": "^4.2.3"
   },
   "devDependencies": {
     "@types/jspath": "^0.4.0",
     "antlr4ts-cli": "0.5.0-alpha.3",
-    "typescript": "3.5.3"
+    "typescript": "3.5.3",
+    "ts-loader": "^7.0.5",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
   },
   "scripts": {
     "build:src": "tsc -b",
@@ -55,7 +59,8 @@
     "test": "yarn build && mocha tests --timeout 60000",
     "lint": "eslint . --ext .js,.ts",
     "antlr-build-expression": "antlr4ts src/parser/ExpressionAntlrLexer.g4 -o src/parser/generated && antlr4ts src/parser/ExpressionAntlrParser.g4 -visitor -o src/parser/generated",
-    "antlr-build-commonregex": "antlr4ts src/CommonRegex.g4 -o src/generated -visitor"
+    "antlr-build-commonregex": "antlr4ts src/CommonRegex.g4 -o src/generated -visitor",
+    "build:bundle": "webpack"
   },
   "files": [
     "lib",
