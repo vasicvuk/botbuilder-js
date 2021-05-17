@@ -199,7 +199,6 @@ export class BotFrameworkAdapter
     // These keys are public to permit access to the keys from the adapter when it's a being
     // from library that does not have access to static properties off of BotFrameworkAdapter.
     // E.g. botbuilder-dialogs
-    public readonly ConnectorClientKey: symbol = Symbol('ConnectorClient');
     public readonly TokenApiClientCredentialsKey: symbol = Symbol('TokenApiClientCredentials');
 
     protected readonly credentials: AppCredentials;
