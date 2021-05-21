@@ -18,20 +18,7 @@ const stringIsNullOrEmpty = (val: unknown): val is Maybe<string> => {
  * A simple implementation of the [ServiceClientCredentialsFactory](xref:botframework-connector.ServiceClientCredentialsFactory) interface.
  */
 export class PasswordServiceClientCredentialFactory implements ServiceClientCredentialsFactory {
-    /**
-     * The app ID for this credential.
-     */
-    appId: string | null;
-
-    /**
-     * The app password for this credential.
-     */
-    password: string | null;
-
-    constructor(appId: string, password: string) {
-        this.appId = appId;
-        this.password = password;
-    }
+    constructor(public readonly appId?: string, public readonly password?: string) {}
 
     async isValidAppId(appId: string): Promise<boolean> {
         return appId === this.appId;
