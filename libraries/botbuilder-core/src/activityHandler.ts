@@ -3,17 +3,11 @@
  * Licensed under the MIT License.
  */
 
-import {
-    Activity,
-    AdaptiveCardInvokeResponse,
-    AdaptiveCardInvokeValue,
-    MessageReaction,
-} from 'botframework-schema';
-
+import { Activity, AdaptiveCardInvokeResponse, AdaptiveCardInvokeValue, MessageReaction } from 'botframework-schema';
 import { ActivityHandlerBase } from './activityHandlerBase';
 import { InvokeException } from './invokeException';
 import { InvokeResponse } from './invokeResponse';
-import { StatusCodes } from './statusCodes';
+import { StatusCodes } from 'botframework-schema';
 import { TurnContext } from './turnContext';
 import { verifyStateOperationName, tokenExchangeOperationName, tokenResponseEventName } from './signInConstants';
 
