@@ -55,7 +55,7 @@ export class BotFrameworkAuthenticationFactory {
         callerId: string,
         credentialFactory: ServiceClientCredentialsFactory,
         authConfiguration: AuthenticationConfiguration,
-        botFrameworkClientFetch?: (input: RequestInfo, init?: RequestInit) => Promise<Response>,
+        botFrameworkClientFetch?: typeof fetch,
         connectorClientOptions?: ConnectorClientOptions
     ): BotFrameworkAuthentication;
 
