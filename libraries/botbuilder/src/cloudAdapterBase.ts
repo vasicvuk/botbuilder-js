@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 import { BotCallbackHandlerKey, INVOKE_RESPONSE_KEY } from 'botbuilder-core';
+import { BotLogic } from './interfaces';
 import { delay } from 'botbuilder-stdlib';
 
 import {
@@ -64,13 +65,11 @@ export abstract class CloudAdapterBase extends BotAdapter {
         return Promise.all(
             activities.map(async (activity) => {
                 // TODO(jpg) why are we explicitly removing the ID?
-                delete activity.id;
-
-                let response: ResourceResponse;
+                // delete activity.id;
 
                 if (activity.type === 'delay') {
                     await delay(typeof activity.value === 'number' ? activity.value : 1000);
-                } else if (ActivityTypes.InvokeResponse) {
+                } else if (activity.type === ActivityTypes.InvokeResponse) {
                     context.turnState.set(INVOKE_RESPONSE_KEY, activity);
                 } else if (activity.type === ActivityTypes.Trace && activity.channelId !== Channels.Emulator) {
                     // no-op
@@ -82,21 +81,18 @@ export abstract class CloudAdapterBase extends BotAdapter {
 
                     if (activity.replyToId) {
                         // TODO(jpg): this right?
-                        response = await connectorClient.conversations.replyToActivity(
+                        return connectorClient.conversations.replyToActivity(
                             activity.conversation.id,
-                            activity.id,
+                            activity.replyToId,
                             activity
                         );
                     } else {
                         // TODO(jpg): this right?
-                        response = await connectorClient.conversations.sendToConversation(
-                            activity.conversation.id,
-                            activity
-                        );
+                        return connectorClient.conversations.sendToConversation(activity.conversation.id, activity);
                     }
                 }
 
-                return response ?? { id: activity.id ?? '' };
+                return { id: activity.id ?? '' };
             })
         );
     }
@@ -152,16 +148,25 @@ export abstract class CloudAdapterBase extends BotAdapter {
     /**
      * @inheritdoc
      */
-    public async continueConversation(
-        reference: Partial<ConversationReference>,
-        logic: (context: TurnContext) => Promise<void>
-    ): Promise<void> {
+    public async continueConversation(reference: Partial<ConversationReference>, logic: BotLogic): Promise<void> {
         return this.processProactive(
             this.createClaimsIdentity(),
             ActivityEx.getContinuationActivity(reference),
-            null, // TODO(jpg) meaning of null audience? should this actually be `''`?
+            undefined,
             logic
         );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public async continueConversationWithClaims(
+        claimsIdentity: ClaimsIdentity,
+        reference: Partial<ConversationReference>,
+        audience: string | undefined,
+        logic: BotLogic
+    ): Promise<void> {
+        return this.processProactive(claimsIdentity, ActivityEx.getContinuationActivity(reference), audience, logic);
     }
 
     /**
@@ -176,8 +181,8 @@ export abstract class CloudAdapterBase extends BotAdapter {
     protected async processProactive(
         claimsIdentity: ClaimsIdentity,
         continuationActivity: Partial<Activity>,
-        audience: string,
-        logic: (context: TurnContext) => Promise<void>
+        audience: string | undefined,
+        logic: BotLogic
     ): Promise<void> {
         // Create the connector factory and  the inbound request, extracting parameters and then create a connector for outbound requests.
         const connectorFactory = this.botFrameworkAuthentication.createConnectorFactory(claimsIdentity);
@@ -214,7 +219,7 @@ export abstract class CloudAdapterBase extends BotAdapter {
     protected processActivity(
         authHeader: string,
         activity: Activity,
-        logic: (context: TurnContext) => Promise<void>
+        logic: BotLogic
     ): Promise<InvokeResponse | undefined>;
 
     /**
@@ -228,7 +233,7 @@ export abstract class CloudAdapterBase extends BotAdapter {
     protected processActivity(
         authenticateRequestResult: AuthenticateRequestResult,
         activity: Activity,
-        logic: (context: TurnContext) => Promise<void>
+        logic: BotLogic
     ): Promise<InvokeResponse | undefined>;
 
     /**
@@ -237,7 +242,7 @@ export abstract class CloudAdapterBase extends BotAdapter {
     protected async processActivity(
         authHeaderOrAuthenticateRequestResult: string | AuthenticateRequestResult,
         activity: Activity,
-        logic: (context: TurnContext) => Promise<void>
+        logic: BotLogic
     ): Promise<InvokeResponse | undefined> {
         // Authenticate the inbound request, extracting parameters and create a ConnectorFactory for creating a Connector for outbound requests.
         const authenticateRequestResult =
@@ -252,10 +257,14 @@ export abstract class CloudAdapterBase extends BotAdapter {
         activity.callerId = authenticateRequestResult.callerId;
 
         // Create the connector client to use for outbound requests.
-        const connectorClient = await authenticateRequestResult.connectorFactory.create(
+        const connectorClient = await authenticateRequestResult.connectorFactory?.create(
             activity.serviceUrl,
             authenticateRequestResult.audience
         );
+
+        if (!connectorClient) {
+            throw new Error();
+        }
 
         // Create a UserTokenClient instance for the application to use. (For example, it would be used in a sign-in prompt.)
         const userTokenClient = await this.botFrameworkAuthentication.createUserTokenClient(
@@ -306,7 +315,7 @@ export abstract class CloudAdapterBase extends BotAdapter {
         oauthScope: string,
         connectorClient: ConnectorClient,
         userTokenClient: UserTokenClient,
-        logic: (context: TurnContext) => Promise<void>,
+        logic: BotLogic,
         connectorFactory: ConnectorFactory
     ): TurnContext {
         const context = new TurnContext(this, activity);
