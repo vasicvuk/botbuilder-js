@@ -7,16 +7,77 @@
  */
 
 import { Activity, AttachmentData, ConversationParameters, StatusCodes, Transcript } from 'botbuilder-core';
-
-import { ChannelServiceHandler } from './channelServiceHandler';
+import { ChannelServiceHandlerBase } from './channelServiceHandlerBase';
+import { RouteConstants } from './routeConstants';
 import { StatusCodeError } from './statusCodeError';
 import { WebRequest, WebResponse } from './interfaces';
-
-export type RouteHandler = (request: WebRequest, response: WebResponse) => void;
-
 import { validateAndFixActivity } from './activityValidator';
 
-import { RouteConstants } from './routeConstants';
+function readBody<T>(req: WebRequest): Promise<T> {
+    return new Promise((resolve, reject) => {
+        if (req.body) {
+            try {
+                resolve(req.body);
+            } catch (err) {
+                reject(new StatusCodeError(StatusCodes.BAD_REQUEST, err.message));
+            }
+        } else {
+            let requestData = '';
+
+            req.on('data', (chunk: string) => (requestData += chunk));
+
+            req.on('error', (err: Error | string) =>
+                reject(new StatusCodeError(StatusCodes.BAD_REQUEST, err instanceof Error ? err.message : err))
+            );
+
+            req.on('end', () => {
+                try {
+                    resolve(JSON.parse(requestData));
+                } catch (err) {
+                    reject(new StatusCodeError(StatusCodes.BAD_REQUEST, err.message));
+                }
+            });
+        }
+    });
+}
+
+const readActivity = async (req: WebRequest): Promise<Activity> => {
+    try {
+        return validateAndFixActivity(await readBody<Activity>(req));
+    } catch (err) {
+        throw new StatusCodeError(StatusCodes.BAD_REQUEST, err.message);
+    }
+};
+
+function handler(
+    fn: (req: WebRequest, authHeader: string, res: WebResponse) => Promise<[StatusCodes, unknown?]>
+): (req: WebRequest, res: WebResponse) => Promise<void> {
+    return async (req, res) => {
+        try {
+            const [statusCode, body] = await fn(req, req.headers.authorization ?? req.headers.Authorization ?? '', res);
+
+            if (body) {
+                res.send(body);
+            }
+
+            res.status(statusCode);
+        } catch (err) {
+            if (err instanceof StatusCodeError) {
+                res.send(err.message);
+                res.status(err.statusCode);
+            } else {
+                res.status(500);
+            }
+        } finally {
+            res.end();
+        }
+    };
+}
+
+/**
+ * Signature for generic HTTP route handler
+ */
+export type RouteHandler = (request: WebRequest, response: WebResponse) => void;
 
 /**
  * Interface representing an Express Application or a Restify Server.
@@ -36,378 +97,168 @@ export interface WebServer {
  * Routes the API calls with the ChannelServiceHandler methods.
  */
 export class ChannelServiceRoutes {
-    /**
-     * @param channelServiceHandler
-     */
-    constructor(private readonly channelServiceHandler: ChannelServiceHandler) {
-        this.channelServiceHandler = channelServiceHandler;
-    }
+    constructor(private readonly channelServiceHandler: ChannelServiceHandlerBase) {}
 
     /**
      * Registers all Channel Service paths on the provided WebServer.
+     *
      * @param server WebServer
      * @param basePath Optional basePath which is appended before the service's REST API is configured on the WebServer.
      */
     public register(server: WebServer, basePath = ''): void {
-        server.post(basePath + RouteConstants.Activities, this.processSendToConversation.bind(this));
-        server.post(basePath + RouteConstants.Activity, this.processReplyToActivity.bind(this));
-        server.put(basePath + RouteConstants.Activity, this.processUpdateActivity.bind(this));
-        server.get(basePath + RouteConstants.ActivityMembers, this.processGetActivityMembers.bind(this));
-        server.post(basePath + RouteConstants.Conversations, this.processCreateConversation.bind(this));
-        server.get(basePath + RouteConstants.Conversations, this.processGetConversations.bind(this));
-        server.get(basePath + RouteConstants.ConversationMembers, this.processGetConversationMembers.bind(this));
-        server.get(
-            basePath + RouteConstants.ConversationPagedMembers,
-            this.processGetConversationPagedMembers.bind(this)
+        server.post(
+            `${basePath}${RouteConstants.Activities}`,
+            handler(async (req, authHeader) => [
+                StatusCodes.OK,
+                await this.channelServiceHandler.handleSendToConversation(
+                    authHeader,
+                    req.params.conversationId,
+                    await readActivity(req)
+                ),
+            ])
         );
-        server.post(basePath + RouteConstants.ConversationHistory, this.processSendConversationHistory.bind(this));
-        server.post(basePath + RouteConstants.Attachments, this.processUploadAttachment.bind(this));
+
+        server.post(
+            `${basePath}${RouteConstants.Activity}`,
+            handler(async (req, authHeader) => [
+                StatusCodes.OK,
+                await this.channelServiceHandler.handleReplyToActivity(
+                    authHeader,
+                    req.params.conversationId,
+                    req.params.activityId,
+                    await readActivity(req)
+                ),
+            ])
+        );
+
+        server.put(
+            `${basePath}${RouteConstants.Activity}`,
+            handler(async (req, authHeader) => [
+                StatusCodes.OK,
+                await this.channelServiceHandler.handleUpdateActivity(
+                    authHeader,
+                    req.params.conversationId,
+                    req.params.activityId,
+                    await readActivity(req)
+                ),
+            ])
+        );
+
+        server.get(
+            `${basePath}${RouteConstants.ActivityMembers}`,
+            handler(async (req, authHeader) => [
+                StatusCodes.OK,
+                await this.channelServiceHandler.handleGetActivityMembers(
+                    authHeader,
+                    req.params.conversationId,
+                    req.params.activityId
+                ),
+            ])
+        );
+
+        server.post(
+            `${basePath}${RouteConstants.Conversations}`,
+            handler(async (req, authHeader) => [
+                StatusCodes.CREATED,
+                await this.channelServiceHandler.handleCreateConversation(
+                    authHeader,
+                    await readBody<ConversationParameters>(req)
+                ),
+            ])
+        );
+
+        server.get(
+            `${basePath}${RouteConstants.Conversations}`,
+            handler(async (req, authHeader) => [
+                StatusCodes.OK,
+                await this.channelServiceHandler.handleGetConversations(
+                    authHeader,
+                    req.params.conversationId,
+                    req.query.continuationToken
+                ),
+            ])
+        );
+
+        server.get(
+            `${basePath}${RouteConstants.ConversationMembers}`,
+            handler(async (req, authHeader) => [
+                StatusCodes.OK,
+                await this.channelServiceHandler.handleGetConversationMembers(authHeader, req.params.conversationId),
+            ])
+        );
+
+        server.get(
+            `${basePath}${RouteConstants.ConversationPagedMembers}`,
+            handler(async (req, authHeader) => {
+                let pageSize = parseInt(req.query.pageSize, 10);
+                if (isNaN(pageSize)) {
+                    pageSize = undefined;
+                }
+
+                return [
+                    StatusCodes.OK,
+                    await this.channelServiceHandler.handleGetConversationPagedMembers(
+                        authHeader,
+                        req.params.conversationId,
+                        pageSize,
+                        req.query.continuationToken
+                    ),
+                ];
+            })
+        );
+
+        server.post(
+            `${basePath}${RouteConstants.ConversationHistory}`,
+            handler(async (req, authHeader) => [
+                StatusCodes.OK,
+                await this.channelServiceHandler.handleSendConversationHistory(
+                    authHeader,
+                    req.params.conversationId,
+                    await readBody<Transcript>(req)
+                ),
+            ])
+        );
+
+        server.post(
+            `${basePath}${RouteConstants.Attachments}`,
+            handler(async (req, authHeader) => [
+                StatusCodes.OK,
+                await this.channelServiceHandler.handleUploadAttachment(
+                    authHeader,
+                    req.params.conversationId,
+                    await readBody<AttachmentData>(req)
+                ),
+            ])
+        );
+
+        const deleteConversationMember = handler(async (req, authHeader) => {
+            await this.channelServiceHandler.handleDeleteConversationMember(
+                authHeader,
+                req.params.conversationId,
+                req.params.memberId
+            );
+
+            return [StatusCodes.OK];
+        });
+
+        const deleteActivity = handler(async (req, authHeader) => {
+            await this.channelServiceHandler.handleDeleteActivity(
+                authHeader,
+                req.params.conversationId,
+                req.params.activityId
+            );
+
+            return [StatusCodes.OK];
+        });
 
         // Express 4.x uses the delete() method to register handlers for the DELETE method.
         // Restify 8.x uses the del() method.
         if (typeof server.delete === 'function') {
-            server.delete(
-                basePath + RouteConstants.ConversationMember,
-                this.processDeleteConversationMember.bind(this)
-            );
-            server.delete(basePath + RouteConstants.Activity, this.processDeleteActivity.bind(this));
+            server.delete(`${basePath}${RouteConstants.ConversationMember}`, deleteConversationMember);
+            server.delete(`${basePath}${RouteConstants.Activity}`, deleteActivity);
         } else if (typeof server.del === 'function') {
-            server.del(basePath + RouteConstants.ConversationMember, this.processDeleteConversationMember.bind(this));
-            server.del(basePath + RouteConstants.Activity, this.processDeleteActivity.bind(this));
+            server.del(`${basePath}${RouteConstants.ConversationMember}`, deleteConversationMember);
+            server.del(`${basePath}${RouteConstants.Activity}`, deleteActivity);
         }
-    }
-
-    /**
-     * @private
-     */
-    private processSendToConversation(req: WebRequest, res: WebResponse): void {
-        const authHeader = req.headers.authorization || req.headers.Authorization || '';
-        ChannelServiceRoutes.readActivity(req)
-            .then((activity) => {
-                this.channelServiceHandler
-                    .handleSendToConversation(authHeader, req.params.conversationId, activity)
-                    .then((resourceResponse) => {
-                        res.status(200);
-                        if (resourceResponse) {
-                            res.send(resourceResponse);
-                        }
-                        res.end();
-                    })
-                    .catch((err) => {
-                        ChannelServiceRoutes.handleError(err, res);
-                    });
-            })
-            .catch((err) => {
-                ChannelServiceRoutes.handleError(err, res);
-            });
-    }
-
-    /**
-     * @private
-     */
-    private processReplyToActivity(req: WebRequest, res: WebResponse): void {
-        const authHeader = req.headers.authorization || req.headers.Authorization || '';
-        ChannelServiceRoutes.readActivity(req)
-            .then((activity) => {
-                this.channelServiceHandler
-                    .handleReplyToActivity(authHeader, req.params.conversationId, req.params.activityId, activity)
-                    .then((resourceResponse) => {
-                        res.status(200);
-                        if (resourceResponse) {
-                            res.send(resourceResponse);
-                        }
-                        res.end();
-                    })
-                    .catch((err) => {
-                        ChannelServiceRoutes.handleError(err, res);
-                    });
-            })
-            .catch((err) => {
-                ChannelServiceRoutes.handleError(err, res);
-            });
-    }
-
-    /**
-     * @private
-     */
-    private processUpdateActivity(req: WebRequest, res: WebResponse): void {
-        const authHeader = req.headers.authorization || req.headers.Authorization || '';
-        ChannelServiceRoutes.readActivity(req)
-            .then((activity) => {
-                this.channelServiceHandler
-                    .handleUpdateActivity(authHeader, req.params.conversationId, req.params.activityId, activity)
-                    .then((resourceResponse) => {
-                        res.status(200);
-                        if (resourceResponse) {
-                            res.send(resourceResponse);
-                        }
-                        res.end();
-                    })
-                    .catch((err) => {
-                        ChannelServiceRoutes.handleError(err, res);
-                    });
-            })
-            .catch((err) => {
-                ChannelServiceRoutes.handleError(err, res);
-            });
-    }
-
-    /**
-     * @private
-     */
-    private processDeleteActivity(req: WebRequest, res: WebResponse): void {
-        const authHeader = req.headers.authorization || req.headers.Authorization || '';
-        this.channelServiceHandler
-            .handleDeleteActivity(authHeader, req.params.conversationId, req.params.activityId)
-            .then(() => {
-                res.status(200);
-                res.end();
-            })
-            .catch((err) => {
-                ChannelServiceRoutes.handleError(err, res);
-            });
-    }
-
-    /**
-     * @private
-     */
-    private processGetActivityMembers(req: WebRequest, res: WebResponse): void {
-        const authHeader = req.headers.authorization || req.headers.Authorization || '';
-        this.channelServiceHandler
-            .handleGetActivityMembers(authHeader, req.params.conversationId, req.params.activityId)
-            .then((channelAccounts) => {
-                if (channelAccounts) {
-                    res.send(channelAccounts);
-                }
-                res.status(200);
-                res.end();
-            })
-            .catch((err) => {
-                ChannelServiceRoutes.handleError(err, res);
-            });
-    }
-
-    /**
-     * @private
-     */
-    private processCreateConversation(req: WebRequest, res: WebResponse): void {
-        const authHeader = req.headers.authorization || req.headers.Authorization || '';
-        ChannelServiceRoutes.readBody<ConversationParameters>(req).then((conversationParameters) => {
-            this.channelServiceHandler
-                .handleCreateConversation(authHeader, conversationParameters)
-                .then((conversationResourceResponse) => {
-                    if (conversationResourceResponse) {
-                        res.send(conversationResourceResponse);
-                    }
-                    res.status(201);
-                    res.end();
-                })
-                .catch((err) => {
-                    ChannelServiceRoutes.handleError(err, res);
-                });
-        });
-    }
-
-    /**
-     * @private
-     */
-    private processGetConversations(req: WebRequest, res: WebResponse): void {
-        const authHeader = req.headers.authorization || req.headers.Authorization || '';
-        this.channelServiceHandler
-            .handleGetConversations(authHeader, req.params.conversationId, req.query.continuationToken)
-            .then((conversationsResult) => {
-                if (conversationsResult) {
-                    res.send(conversationsResult);
-                }
-                res.status(200);
-                res.end();
-            })
-            .catch((err) => {
-                ChannelServiceRoutes.handleError(err, res);
-            });
-    }
-
-    /**
-     * @private
-     */
-    private processGetConversationMembers(req: WebRequest, res: WebResponse): void {
-        const authHeader = req.headers.authorization || req.headers.Authorization || '';
-        this.channelServiceHandler
-            .handleGetConversationMembers(authHeader, req.params.conversationId)
-            .then((channelAccounts) => {
-                res.status(200);
-                if (channelAccounts) {
-                    res.send(channelAccounts);
-                }
-                res.end();
-            })
-            .catch((err) => {
-                ChannelServiceRoutes.handleError(err, res);
-            });
-    }
-
-    /**
-     * @private
-     */
-    private processGetConversationPagedMembers(req: WebRequest, res: WebResponse): void {
-        const authHeader = req.headers.authorization || req.headers.Authorization || '';
-        let pageSize = parseInt(req.query.pageSize);
-        if (isNaN(pageSize)) {
-            pageSize = undefined;
-        }
-        this.channelServiceHandler
-            .handleGetConversationPagedMembers(
-                authHeader,
-                req.params.conversationId,
-                pageSize,
-                req.query.continuationToken
-            )
-            .then((pagedMembersResult) => {
-                res.status(200);
-                if (pagedMembersResult) {
-                    res.send(pagedMembersResult);
-                }
-                res.end();
-            })
-            .catch((err) => {
-                ChannelServiceRoutes.handleError(err, res);
-            });
-    }
-
-    /**
-     * @private
-     */
-    private processDeleteConversationMember(req: WebRequest, res: WebResponse): void {
-        const authHeader = req.headers.authorization || req.headers.Authorization || '';
-        this.channelServiceHandler
-            .handleDeleteConversationMember(authHeader, req.params.conversationId, req.params.memberId)
-            .then((resourceResponse) => {
-                res.status(200);
-                res.end();
-            })
-            .catch((err) => {
-                ChannelServiceRoutes.handleError(err, res);
-            });
-    }
-
-    /**
-     * @private
-     */
-    private processSendConversationHistory(req: WebRequest, res: WebResponse): void {
-        const authHeader = req.headers.authorization || req.headers.Authorization || '';
-        ChannelServiceRoutes.readBody<Transcript>(req)
-            .then((transcript) => {
-                this.channelServiceHandler
-                    .handleSendConversationHistory(authHeader, req.params.conversationId, transcript)
-                    .then((resourceResponse) => {
-                        if (resourceResponse) {
-                            res.send(resourceResponse);
-                        }
-                        res.status(200);
-                        res.end();
-                    })
-                    .catch((err) => {
-                        ChannelServiceRoutes.handleError(err, res);
-                    });
-            })
-            .catch((err) => {
-                ChannelServiceRoutes.handleError(err, res);
-            });
-    }
-
-    /**
-     * @private
-     */
-    private processUploadAttachment(req: WebRequest, res: WebResponse): void {
-        const authHeader = req.headers.authorization || req.headers.Authorization || '';
-        ChannelServiceRoutes.readBody<AttachmentData>(req)
-            .then((attachmentData) => {
-                this.channelServiceHandler
-                    .handleUploadAttachment(authHeader, req.params.conversationId, attachmentData)
-                    .then((resourceResponse) => {
-                        if (resourceResponse) {
-                            res.send(resourceResponse);
-                        }
-                        res.status(200);
-                        res.end();
-                    })
-                    .catch((err) => {
-                        ChannelServiceRoutes.handleError(err, res);
-                    });
-            })
-            .catch((err) => {
-                ChannelServiceRoutes.handleError(err, res);
-            });
-    }
-
-    /**
-     * @private
-     */
-    private static readActivity(req: WebRequest): Promise<Activity> {
-        return new Promise((resolve, reject) => {
-            if (req.body) {
-                try {
-                    const activity = validateAndFixActivity(req.body);
-                    resolve(activity);
-                } catch (err) {
-                    reject(new StatusCodeError(StatusCodes.BAD_REQUEST, err.message));
-                }
-            } else {
-                let requestData = '';
-                req.on('data', (chunk) => {
-                    requestData += chunk;
-                });
-                req.on('end', () => {
-                    try {
-                        const body = JSON.parse(requestData);
-                        const activity = validateAndFixActivity(body);
-                        resolve(activity);
-                    } catch (err) {
-                        reject(new StatusCodeError(StatusCodes.BAD_REQUEST, err.message));
-                    }
-                });
-            }
-        });
-    }
-
-    /**
-     * @private
-     */
-    private static readBody<T>(req: WebRequest): Promise<T> {
-        return new Promise((resolve, reject) => {
-            if (req.body) {
-                try {
-                    resolve(req.body);
-                } catch (err) {
-                    reject(new StatusCodeError(StatusCodes.BAD_REQUEST, err.message));
-                }
-            } else {
-                let requestData = '';
-                req.on('data', (chunk) => {
-                    requestData += chunk;
-                });
-                req.on('end', () => {
-                    try {
-                        const body = JSON.parse(requestData);
-                        resolve(body);
-                    } catch (err) {
-                        reject(new StatusCodeError(StatusCodes.BAD_REQUEST, err.message));
-                    }
-                });
-            }
-        });
-    }
-
-    /**
-     * @private
-     */
-    private static handleError(err: any, res: WebResponse): void {
-        if (err instanceof StatusCodeError) {
-            res.send(err.message);
-            res.status(err.statusCode);
-        } else {
-            res.status(500);
-        }
-        res.end();
     }
 }
