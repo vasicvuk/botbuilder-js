@@ -28,3 +28,4 @@ export { StreamingHttpClient, TokenResolver } from './streaming';
 export { WebRequest, WebResponse } from './interfaces';
 
 export { CloudAdapterBase } from './cloudAdapterBase';
+export { Request, Response } from './interfaces';
