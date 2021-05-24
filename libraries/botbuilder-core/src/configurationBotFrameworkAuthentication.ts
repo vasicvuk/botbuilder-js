@@ -3,7 +3,7 @@
 
 import * as t from 'runtypes';
 import { Configuration } from 'botbuilder-dialogs-adaptive-runtime-core';
-import { configurationServiceClientCredentialFactory } from './configurationServiceClientCredentialFactory';
+import { ConfigurationServiceClientCredentialFactory } from './configurationServiceClientCredentialFactory';
 
 import {
     AuthenticationConfiguration,
@@ -65,7 +65,7 @@ export function configurationBotFrameworkAuthentication(
         ToBotFromChannelOpenIdMetadataUrl,
         ToBotFromEmulatorOpenIdMetadataUrl,
         CallerId,
-        configurationServiceClientCredentialFactory(configuration),
+        new ConfigurationServiceClientCredentialFactory(configuration),
         authenticationConfiguration
     );
 }
