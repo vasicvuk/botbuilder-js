@@ -10,7 +10,7 @@ import { BotFrameworkHttpAdapter } from './botFrameworkHttpAdapter';
 import { HttpClient, userAgentPolicy } from '@azure/ms-rest-js';
 import { INodeBufferT, INodeSocketT } from './runtypes';
 import { arch, release, type } from 'os';
-import { delay } from 'botbuilder-stdlib';
+import { delay, retry } from 'botbuilder-stdlib';
 import { validateAndFixActivity } from './activityValidator';
 
 import {
