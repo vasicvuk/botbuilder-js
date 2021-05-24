@@ -12,11 +12,12 @@ import {
 } from 'botframework-connector';
 
 /**
- * TODO(jpg): this
+ * Create a [BotFrameworkAuthentication](xref:botframework-connector.BotFrameworkAuthentication) instance
+ * based on runtime configuration.
  *
- * @param configuration configuration
- * @param authenticationConfiguration authentication configuration to use
- * @returns bot framework authentication instance
+ * @param configuration [Configuration](xref:botbuilder-dialogs-adaptive-runtime-core.Configuration) instance
+ * @param authenticationConfiguration [AuthenticationConfiguration](xref:botframework-connector.AuthenticationConfiguration) instance
+ * @returns [BotFrameworkAuthentication](xref:botframework-connector.BotFrameworkAuthentication) instance
  */
 export function configurationBotFrameworkAuthentication(
     configuration: Configuration,
@@ -24,7 +25,7 @@ export function configurationBotFrameworkAuthentication(
 ): BotFrameworkAuthentication {
     const {
         ChannelService,
-        ValidateAuthority: maybeValidateAuthority = 'true',
+        ValidateAuthority: MaybeValidateAuthority = 'true',
         ToChannelFromBotLoginUrl,
         ToChannelFromBotOAuthScope,
         ToBotFromChannelTokenIssuer,
@@ -49,7 +50,7 @@ export function configurationBotFrameworkAuthentication(
 
     let ValidateAuthority = true;
     try {
-        ValidateAuthority = t.Boolean.check(JSON.parse(maybeValidateAuthority.toString()));
+        ValidateAuthority = t.Boolean.check(JSON.parse(MaybeValidateAuthority.toString()));
     } catch (_err) {
         // no-op
     }

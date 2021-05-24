@@ -6,16 +6,17 @@ import type { Configuration } from 'botbuilder-dialogs-adaptive-runtime-core';
 import { PasswordServiceClientCredentialFactory, ServiceClientCredentialsFactory } from 'botframework-connector';
 
 /**
- * TODO(jpg) this
+ * Create a [ServiceClientCredentialsFactory](xref:botframework-connector.ServiceClientCredentialsFactory) instance
+ * based on runtime configuration.
  *
- * @param configuration configuration
- * @returns service client credentials factory instance
+ * @param configuration [Configuration](xref:botbuilder-dialogs-adaptive-runtime-core.Configuration) instance
+ * @returns [ServiceClientCredentialsFactory](xref:botframework-connector.ServiceClientCredentialsFactory) instance
  */
 export function configurationServiceClientCredentialFactory(
     configuration: Configuration
 ): ServiceClientCredentialsFactory {
-    const appId = t.Optional(t.String).check(configuration.get(['MicrosoftAppId']));
-    const appPassword = t.Optional(t.String).check(configuration.get(['MicrosoftAppPassword']));
-
-    return new PasswordServiceClientCredentialFactory(appId, appPassword);
+    return new PasswordServiceClientCredentialFactory(
+        t.Optional(t.String).check(configuration.get(['MicrosoftAppId'])),
+        t.Optional(t.String).check(configuration.get(['MicrosoftAppPassword']))
+    );
 }
