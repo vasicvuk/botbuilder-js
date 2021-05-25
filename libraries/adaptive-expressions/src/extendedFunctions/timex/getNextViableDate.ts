@@ -6,15 +6,15 @@
  * Licensed under the MIT License.
  */
 
-import { ExpressionEvaluator } from '../expressionEvaluator';
-import { Expression } from '../expression';
-import { ReturnType } from '../returnType';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { InternalFunctionUtils } from '../functionUtils.internal';
-import { MemoryInterface } from '../memory/memoryInterface';
-import { Options } from '../options';
-import { TimeZoneConverter } from '../timeZoneConverter';
+import { ExpressionEvaluator } from '../../expressionEvaluator';
+import { Expression } from '../../expression';
+import { ReturnType } from '../../returnType';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { InternalFunctionUtils } from '../../functionUtils.internal';
+import { MemoryInterface } from '../../memory/memoryInterface';
+import { Options } from '../../options';
+import { TimeZoneConverter } from '../../timeZoneConverter';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);

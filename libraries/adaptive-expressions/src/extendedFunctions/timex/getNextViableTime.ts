@@ -6,30 +6,32 @@
  * Licensed under the MIT License.
  */
 
-import { ExpressionEvaluator } from '../expressionEvaluator';
-import { Expression } from '../expression';
-import { ReturnType } from '../returnType';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { InternalFunctionUtils } from '../functionUtils.internal';
-import { MemoryInterface } from '../memory/memoryInterface';
-import { Options } from '../options';
-import { TimeZoneConverter } from '../timeZoneConverter';
+import { ExpressionEvaluator } from '../../expressionEvaluator';
+import { Expression } from '../../expression';
+import { ReturnType } from '../../returnType';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { InternalFunctionUtils } from '../../functionUtils.internal';
+import { MemoryInterface } from '../../memory/memoryInterface';
+import { Options } from '../../options';
+import { TimeZoneConverter } from '../../timeZoneConverter';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(timezone);
 import { TimexProperty, Time } from '@microsoft/recognizers-text-data-types-timex-expression';
 /**
- * Return the previous viable time of a timex expression based on the current time and user's timezone.
+ * Return the next viable time of a timex expression based on the current time and user's timezone.
  */
-export class GetPreviousViableTime extends ExpressionEvaluator {
+export class GetNextViableTime extends ExpressionEvaluator {
     /**
-     * Initializes a new instance of the [GetPreviousViableTime](xref:adaptive-expressions.GetPreviousViableTime) class.
+     * Initializes a new instance of the [GetNextViableTime](xref:adaptive-expressions.GetNextViableTime) class.
      */
     public constructor() {
         super(
-            ExpressionType.GetPreviousViableTime,
-            GetPreviousViableTime.evaluator,
+            ExpressionType.GetNextViableTime,
+            GetNextViableTime.evaluator,
             ReturnType.String,
             FunctionUtils.validateUnaryOrBinaryString
         );
@@ -84,14 +86,14 @@ export class GetPreviousViableTime extends ExpressionEvaluator {
             const minute = convertedDateTime.minute();
             const second = convertedDateTime.second();
 
-            if (parsed.minute < minute || (parsed.minute === minute && parsed.second < second)) {
+            if (parsed.minute > minute || (parsed.minute === minute && parsed.second >= second)) {
                 validHour = hour;
             } else {
-                validHour = hour - 1;
+                validHour = hour + 1;
             }
 
-            if (validHour < 0) {
-                validHour += 24;
+            if (validHour >= 24) {
+                validHour -= 24;
             }
 
             validMinute = parsed.minute;
