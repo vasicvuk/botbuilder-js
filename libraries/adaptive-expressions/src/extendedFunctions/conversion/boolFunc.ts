@@ -6,20 +6,20 @@
  * Licensed under the MIT License.
  */
 
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { InternalFunctionUtils } from '../functionUtils.internal';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { InternalFunctionUtils } from '../../functionUtils.internal';
 import { ComparisonEvaluator } from './comparisonEvaluator';
 
 /**
  * Return the Boolean version of a value.
  */
-export class Bool extends ComparisonEvaluator {
+export class BoolFunc extends ComparisonEvaluator {
     /**
      * Initializes a new instance of the [Bool](xref:adaptive-expressions.Bool) class.
      */
     public constructor() {
-        super(ExpressionType.Bool, Bool.func, FunctionUtils.validateUnary);
+        super(ExpressionType.Bool, BoolFunc.func, FunctionUtils.validateUnary);
     }
 
     /**

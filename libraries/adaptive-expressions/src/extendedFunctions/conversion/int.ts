@@ -7,10 +7,10 @@
  */
 
 import bigInt from 'big-integer';
-import { EvaluateExpressionDelegate, ExpressionEvaluator, ValueWithError } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { ReturnType } from '../returnType';
+import { EvaluateExpressionDelegate, ExpressionEvaluator, ValueWithError } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { ReturnType } from '../../returnType';
 
 /**
  * Return the integer version of a string.

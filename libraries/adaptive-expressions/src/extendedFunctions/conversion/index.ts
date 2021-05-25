@@ -1,0 +1,35 @@
+import { Expression } from '../../expression';
+import { Base64 } from './base64';
+import { Base64ToBinary } from './base64ToBinary';
+import { Base64ToString } from './base64ToString';
+import { Binary } from './binary';
+import { BoolFunc } from './boolFuncFunc';
+import { DataUri } from './dataUri';
+import { DataUriToBinary } from './dataUriToBinary';
+import { DataUriToString } from './dataUriToString';
+import { Float } from './float';
+import { FormatNumber } from './formatNumber';
+import { Int } from './int';
+import { JsonStringify } from './jsonStringify';
+import { StringFunc } from './stringFunc';
+import { ExpressionType } from './types';
+import { UriComponent } from './uriComponent';
+import { UriComponentToString } from './uriComponentToString';
+
+export default (): void => {
+    Expression.functions.add(ExpressionType.Base64, new Base64());
+    Expression.functions.add(ExpressionType.Base64ToBinary, new Base64ToBinary());
+    Expression.functions.add(ExpressionType.Base64ToString, new Base64ToString());
+    Expression.functions.add(ExpressionType.Binary, new Binary());
+    Expression.functions.add(ExpressionType.Bool, new BoolFunc());
+    Expression.functions.add(ExpressionType.DataUri, new DataUri());
+    Expression.functions.add(ExpressionType.DataUriToBinary, new DataUriToBinary());
+    Expression.functions.add(ExpressionType.DataUriToString, new DataUriToString());
+    Expression.functions.add(ExpressionType.Float, new Float());
+    Expression.functions.add(ExpressionType.FormatNumber, new FormatNumber());
+    Expression.functions.add(ExpressionType.Int, new Int());
+    Expression.functions.add(ExpressionType.JsonStringify, new JsonStringify());
+    Expression.functions.add(ExpressionType.String, new StringFunc());
+    Expression.functions.add(ExpressionType.UriComponent, new UriComponent());
+    Expression.functions.add(ExpressionType.UriComponentToString, new UriComponentToString());
+};

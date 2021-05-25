@@ -8,13 +8,13 @@
  */
 
 import { formatLocale as d3formatLocale, format as d3format } from 'd3-format';
-import { Expression } from '../expression';
-import { EvaluateExpressionDelegate, ExpressionEvaluator } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { ReturnType } from '../returnType';
-import { Options } from '../options';
-import { localeInfo } from '../localeInfo';
+import { Expression } from '../../expression';
+import { EvaluateExpressionDelegate, ExpressionEvaluator } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { ReturnType } from '../../returnType';
+import { Options } from '../../options';
+import { localeInfo } from '../../localeInfo';
 
 /**
  * Format number into required decimal numbers.

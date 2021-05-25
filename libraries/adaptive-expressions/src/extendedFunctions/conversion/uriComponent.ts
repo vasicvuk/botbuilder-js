@@ -6,10 +6,10 @@
  * Licensed under the MIT License.
  */
 
-import { EvaluateExpressionDelegate, ExpressionEvaluator } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { ReturnType } from '../returnType';
+import { EvaluateExpressionDelegate, ExpressionEvaluator } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { ReturnType } from '../../returnType';
 
 /**
  * Return the binary version of a uniform resource identifier (URI) component.

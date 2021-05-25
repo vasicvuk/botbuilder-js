@@ -6,12 +6,12 @@
  * Licensed under the MIT License.
  */
 
-import { EvaluateExpressionDelegate, ExpressionEvaluator } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { ReturnType } from '../returnType';
+import { EvaluateExpressionDelegate, ExpressionEvaluator } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { ReturnType } from '../../returnType';
 import btoa from 'btoa-lite';
-import { InternalFunctionUtils } from '../functionUtils.internal';
+import { InternalFunctionUtils } from '../../functionUtils.internal';
 
 /**
  * Return the base64-encoded version of a string or byte array.

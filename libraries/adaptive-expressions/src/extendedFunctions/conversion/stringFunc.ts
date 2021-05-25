@@ -7,24 +7,24 @@
  */
 
 import { formatLocale as d3formatLocale, format as d3format } from 'd3-format';
-import { EvaluateExpressionDelegate, ExpressionEvaluator, ValueWithError } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { Options } from '../options';
-import { ReturnType } from '../returnType';
-import { localeInfo } from '../localeInfo';
-import { Expression } from '../expression';
-import { InternalFunctionUtils } from '../functionUtils.internal';
+import { EvaluateExpressionDelegate, ExpressionEvaluator, ValueWithError } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { Options } from '../../options';
+import { ReturnType } from '../../returnType';
+import { localeInfo } from '../../localeInfo';
+import { Expression } from '../../expression';
+import { InternalFunctionUtils } from '../../functionUtils.internal';
 
 /**
  * Return the string version of a value.
  */
-export class String extends ExpressionEvaluator {
+export class StringFunc extends ExpressionEvaluator {
     /**
      * Initializes a new instance of the [String](xref:adaptive-expressions.String) class.
      */
     public constructor() {
-        super(ExpressionType.String, String.evaluator(), ReturnType.String, String.validator);
+        super(ExpressionType.String, StringFunc.evaluator(), ReturnType.String, StringFunc.validator);
     }
 
     /**

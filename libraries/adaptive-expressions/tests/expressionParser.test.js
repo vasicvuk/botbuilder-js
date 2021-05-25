@@ -13,10 +13,12 @@ const datetime = require('../lib/extendedFunctions/datetime');
 const uri = require('../lib/extendedFunctions/uri');
 const timex = require('../lib/extendedFunctions/timex');
 const regex = require('../lib/extendedFunctions/regex');
+const conversion = require('../lib/extendedFunctions/conversion');
 Expression.extend(datetime.default);
 Expression.extend(uri.default);
 Expression.extend(timex.default);
 Expression.extend(regex.default);
+Expression.extend(conversion.default);
 
 const testCases = [
     {
