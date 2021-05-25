@@ -6,13 +6,13 @@
  * Licensed under the MIT License.
  */
 
-import { Expression } from '../expression';
-import { ExpressionEvaluator, ValueWithError } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { MemoryInterface } from '../memory/memoryInterface';
-import { Options } from '../options';
-import { ReturnType } from '../returnType';
+import { Expression } from '../../expression';
+import { ExpressionEvaluator, ValueWithError } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { MemoryInterface } from '../../memory/memoryInterface';
+import { Options } from '../../options';
+import { ReturnType } from '../../returnType';
 import bigInt from 'big-integer';
 
 /**

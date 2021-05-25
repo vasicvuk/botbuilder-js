@@ -9,24 +9,24 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
-import { Expression } from '../expression';
-import { ExpressionEvaluator, ValueWithError } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { InternalFunctionUtils } from '../functionUtils.internal';
-import { MemoryInterface } from '../memory/memoryInterface';
-import { Options } from '../options';
-import { ReturnType } from '../returnType';
+import { Expression } from '../../expression';
+import { ExpressionEvaluator, ValueWithError } from '../../expressionEvaluator';
+import { FunctionUtils } from '../../functionUtils';
+import { InternalFunctionUtils } from '../../functionUtils.internal';
+import { MemoryInterface } from '../../memory/memoryInterface';
+import { Options } from '../../options';
+import { ReturnType } from '../../returnType';
+import { ExpressionType } from './types';
 
 /**
- * Return the start of the month for a timestamp.
+ * Return the start of the hour for a timestamp.
  */
-export class StartOfMonth extends ExpressionEvaluator {
+export class StartOfHour extends ExpressionEvaluator {
     /**
-     * Initializes a new instance of the [StartOfMonth](xref:adaptive-expressions.StartOfMonth) class.
+     * Initializes a new instance of the [StartOfHour](xref:adaptive-expressions.StartOfHour) class.
      */
     public constructor() {
-        super(ExpressionType.StartOfMonth, StartOfMonth.evaluator, ReturnType.String, StartOfMonth.validator);
+        super(ExpressionType.StartOfHour, StartOfHour.evaluator, ReturnType.String, StartOfHour.validator);
     }
 
     /**
@@ -41,7 +41,7 @@ export class StartOfMonth extends ExpressionEvaluator {
         if (!error) {
             ({ format, locale } = FunctionUtils.determineFormatAndLocale(args, 3, format, locale));
             if (typeof args[0] === 'string') {
-                ({ value, error } = StartOfMonth.evalStartOfMonth(args[0], format, locale));
+                ({ value, error } = StartOfHour.evalStartOfHour(args[0], format, locale));
             } else {
                 error = `${expr} should contain an ISO format timestamp and an optional output format string.`;
             }
@@ -53,11 +53,11 @@ export class StartOfMonth extends ExpressionEvaluator {
     /**
      * @private
      */
-    private static evalStartOfMonth(timeStamp: string, format?: string, locale?: string): ValueWithError {
+    private static evalStartOfHour(timeStamp: string, format?: string, locale?: string): ValueWithError {
         let result: string;
         const error = InternalFunctionUtils.verifyISOTimestamp(timeStamp);
         if (!error) {
-            result = dayjs(timeStamp).locale(locale).utc().startOf('month').format(format);
+            result = dayjs(timeStamp).locale(locale).utc().startOf('hour').format(format);
         }
 
         return { value: result, error };

@@ -8,12 +8,12 @@
 
 import { TimexProperty } from '@microsoft/recognizers-text-data-types-timex-expression';
 import dayjs from 'dayjs';
-import { Expression } from '../expression';
-import { EvaluateExpressionDelegate, ExpressionEvaluator, ValueWithError } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { InternalFunctionUtils } from '../functionUtils.internal';
-import { ReturnType } from '../returnType';
+import { Expression } from '../../expression';
+import { EvaluateExpressionDelegate, ExpressionEvaluator, ValueWithError } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { InternalFunctionUtils } from '../../functionUtils.internal';
+import { ReturnType } from '../../returnType';
 
 /**
  * Uses the date-time library to provide a date readback.

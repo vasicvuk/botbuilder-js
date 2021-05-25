@@ -9,15 +9,15 @@
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(timezone);
-import { Expression } from '../expression';
-import { ExpressionEvaluator, ValueWithError } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { InternalFunctionUtils } from '../functionUtils.internal';
-import { MemoryInterface } from '../memory/memoryInterface';
-import { Options } from '../options';
-import { ReturnType } from '../returnType';
-import { TimeZoneConverter } from '../timeZoneConverter';
+import { Expression } from '../../expression';
+import { ExpressionEvaluator, ValueWithError } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { InternalFunctionUtils } from '../../functionUtils.internal';
+import { MemoryInterface } from '../../memory/memoryInterface';
+import { Options } from '../../options';
+import { ReturnType } from '../../returnType';
+import { TimeZoneConverter } from '../../timeZoneConverter';
 
 /**
  * Convert a timestamp from Universal Time Coordinated (UTC) to a target time zone.

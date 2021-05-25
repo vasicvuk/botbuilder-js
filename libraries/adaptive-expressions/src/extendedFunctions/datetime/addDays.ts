@@ -6,7 +6,7 @@
  * Licensed under the MIT License.
  */
 
-import { TimeTransformEvaluator } from '../../builtinFunctions/timeTransformEvaluator';
+import { TimeTransformEvaluator } from './timeTransformEvaluator';
 import { ExpressionType } from './types';
 
 /**

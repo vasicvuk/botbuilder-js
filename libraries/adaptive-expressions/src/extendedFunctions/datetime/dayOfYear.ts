@@ -11,11 +11,11 @@ import dayOfYear from 'dayjs/plugin/dayOfYear';
 dayjs.extend(dayOfYear);
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
-import { EvaluateExpressionDelegate, ExpressionEvaluator } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { InternalFunctionUtils } from '../functionUtils.internal';
-import { ReturnType } from '../returnType';
+import { EvaluateExpressionDelegate, ExpressionEvaluator } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { InternalFunctionUtils } from '../../functionUtils.internal';
+import { ReturnType } from '../../returnType';
 
 /**
  * Return the day of the year from a timestamp.

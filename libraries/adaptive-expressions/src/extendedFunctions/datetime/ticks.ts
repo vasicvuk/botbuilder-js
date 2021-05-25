@@ -6,14 +6,14 @@
  * Licensed under the MIT License.
  */
 
-import { Expression } from '../expression';
-import { ExpressionEvaluator, ValueWithError } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { InternalFunctionUtils } from '../functionUtils.internal';
-import { MemoryInterface } from '../memory/memoryInterface';
-import { Options } from '../options';
-import { ReturnType } from '../returnType';
+import { Expression } from '../../expression';
+import { ExpressionEvaluator, ValueWithError } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { InternalFunctionUtils } from '../../functionUtils.internal';
+import { MemoryInterface } from '../../memory/memoryInterface';
+import { Options } from '../../options';
+import { ReturnType } from '../../returnType';
 
 /**
  * Return the ticks property value of a specified timestamp. A tick is 100-nanosecond interval.

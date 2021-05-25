@@ -8,12 +8,12 @@
 
 import dayjs from 'dayjs';
 
-import { Expression } from '../expression';
-import { EvaluateExpressionDelegate, ExpressionEvaluator } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { Options } from '../options';
-import { ReturnType } from '../returnType';
+import { Expression } from '../../expression';
+import { EvaluateExpressionDelegate, ExpressionEvaluator } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { Options } from '../../options';
+import { ReturnType } from '../../returnType';
 
 /**
  * Return a timestamp in the specified format from UNIX time (also know as Epoch time, POSIX time, UNIX Epoch time).

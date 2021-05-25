@@ -9,13 +9,13 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
-import { Expression } from '../expression';
-import { EvaluateExpressionDelegate, ExpressionEvaluator, ValueWithError } from '../expressionEvaluator';
-import { FunctionUtils } from '../functionUtils';
-import { InternalFunctionUtils } from '../functionUtils.internal';
-import { MemoryInterface } from '../memory/memoryInterface';
-import { Options } from '../options';
-import { ReturnType } from '../returnType';
+import { Expression } from '../../expression';
+import { EvaluateExpressionDelegate, ExpressionEvaluator, ValueWithError } from '../../expressionEvaluator';
+import { FunctionUtils } from '../../functionUtils';
+import { InternalFunctionUtils } from '../../functionUtils.internal';
+import { MemoryInterface } from '../../memory/memoryInterface';
+import { Options } from '../../options';
+import { ReturnType } from '../../returnType';
 
 /**
  * Evaluator that transforms a datetime to another datetime.

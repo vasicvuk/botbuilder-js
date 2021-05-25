@@ -29,7 +29,6 @@ export {
     StringTransformEvaluator,
     ComparisonEvaluator,
     MultivariateNumericEvaluator,
-    TimeTransformEvaluator,
 } from './builtinFunctions';
 export * from './functionUtils';
 export * from './returnType';

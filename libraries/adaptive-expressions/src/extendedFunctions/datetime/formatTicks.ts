@@ -9,13 +9,13 @@
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 
-import { Expression } from '../expression';
-import { EvaluateExpressionDelegate, ExpressionEvaluator, ValueWithError } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { InternalFunctionUtils } from '../functionUtils.internal';
-import { Options } from '../options';
-import { ReturnType } from '../returnType';
+import { Expression } from '../../expression';
+import { EvaluateExpressionDelegate, ExpressionEvaluator, ValueWithError } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { InternalFunctionUtils } from '../../functionUtils.internal';
+import { Options } from '../../options';
+import { ReturnType } from '../../returnType';
 
 /**
  * Return a timestamp in the specified format from ticks.

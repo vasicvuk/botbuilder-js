@@ -9,11 +9,11 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
-import { EvaluateExpressionDelegate, ExpressionEvaluator } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { InternalFunctionUtils } from '../functionUtils.internal';
-import { ReturnType } from '../returnType';
+import { EvaluateExpressionDelegate, ExpressionEvaluator } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { InternalFunctionUtils } from '../../functionUtils.internal';
+import { ReturnType } from '../../returnType';
 
 /**
  * Return the date of a specified timestamp in m/dd/yyyy format.

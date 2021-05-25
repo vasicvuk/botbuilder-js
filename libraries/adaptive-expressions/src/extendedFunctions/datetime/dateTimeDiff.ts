@@ -7,15 +7,15 @@
  */
 
 import bigInt from 'big-integer';
-import { Expression } from '../expression';
-import { ExpressionEvaluator, ValueWithError } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
+import { Expression } from '../../expression';
+import { ExpressionEvaluator, ValueWithError } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
 import dayjs from 'dayjs';
-import { MemoryInterface } from '../memory/memoryInterface';
-import { Options } from '../options';
-import { ReturnType } from '../returnType';
-import { InternalFunctionUtils } from '../functionUtils.internal';
+import { MemoryInterface } from '../../memory/memoryInterface';
+import { Options } from '../../options';
+import { ReturnType } from '../../returnType';
+import { InternalFunctionUtils } from '../../functionUtils.internal';
 
 /**
  * Return a number of ticks that the two timestamps differ.

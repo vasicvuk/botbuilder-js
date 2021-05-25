@@ -6,28 +6,28 @@
  * Licensed under the MIT License.
  */
 
-import { Expression } from '../expression';
-import { ExpressionEvaluator, ValueWithError } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { MemoryInterface } from '../memory/memoryInterface';
-import { Options } from '../options';
-import { ReturnType } from '../returnType';
+import { Expression } from '../../expression';
+import { ExpressionEvaluator, ValueWithError } from '../../expressionEvaluator';
+import { ExpressionType } from './types';
+import { FunctionUtils } from '../../functionUtils';
+import { MemoryInterface } from '../../memory/memoryInterface';
+import { Options } from '../../options';
+import { ReturnType } from '../../returnType';
 import bigInt from 'big-integer';
 
 /**
- * Convert ticks to number of hours.
+ * Convert ticks to number of minutes.
  */
-export class TicksToHours extends ExpressionEvaluator {
-    private static readonly TicksPerHour: number = 60 * 60 * 10000000;
+export class TicksToMinutes extends ExpressionEvaluator {
+    private static readonly TicksPerMinute: number = 60 * 10000000;
 
     /**
-     * Initializes a new instance of the [TicksToHours](xref:adaptive-expressions.TicksToHours) class.
+     * Initializes a new instance of the [TicksToMinutes](xref:adaptive-expressions.TicksToMinutes) class.
      */
     public constructor() {
         super(
-            ExpressionType.TicksToHours,
-            TicksToHours.evaluator,
+            ExpressionType.TicksToMinutes,
+            TicksToMinutes.evaluator,
             ReturnType.Number,
             FunctionUtils.validateUnaryNumber
         );
@@ -43,9 +43,9 @@ export class TicksToHours extends ExpressionEvaluator {
         if (!error) {
             const firstChild = args[0];
             if (Number.isInteger(firstChild)) {
-                value = firstChild / TicksToHours.TicksPerHour;
+                value = firstChild / TicksToMinutes.TicksPerMinute;
             } else if (bigInt.isInstance(firstChild)) {
-                value = firstChild.toJSNumber() / TicksToHours.TicksPerHour;
+                value = firstChild.toJSNumber() / TicksToMinutes.TicksPerMinute;
             } else {
                 error = `${expr} should contain an integer of ticks`;
             }

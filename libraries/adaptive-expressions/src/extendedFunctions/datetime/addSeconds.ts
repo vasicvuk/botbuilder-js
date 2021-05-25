@@ -6,7 +6,7 @@
  * Licensed under the MIT License.
  */
 
-import { ExpressionType } from '../expressionType';
+import { ExpressionType } from './types';
 import { TimeTransformEvaluator } from './timeTransformEvaluator';
 
 /**
