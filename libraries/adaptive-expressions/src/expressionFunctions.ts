@@ -89,7 +89,6 @@ export class ExpressionFunctions {
             new BuiltinFunctions.IsDateTime(),
             new BuiltinFunctions.IsFloat(),
             new BuiltinFunctions.IsInteger(),
-            new BuiltinFunctions.IsMatch(),
             new BuiltinFunctions.IsObject(),
             new BuiltinFunctions.IsString(),
             new BuiltinFunctions.Join(),

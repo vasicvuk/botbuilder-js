@@ -58,7 +58,6 @@ export * from './isBoolean';
 export * from './isDateTime';
 export * from './isFloat';
 export * from './isInteger';
-export * from './isMatch';
 export * from './isObject';
 export * from './isString';
 export * from './join';

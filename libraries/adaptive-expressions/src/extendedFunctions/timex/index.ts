@@ -1,4 +1,4 @@
-import { Expression } from '../../../expression';
+import { Expression } from '../../expression';
 import { GetNextViableDate } from './getNextViableDate';
 import { GetNextViableTime } from './getNextViableTime';
 import { GetPreviousViableDate } from './getPreviousViableDate';

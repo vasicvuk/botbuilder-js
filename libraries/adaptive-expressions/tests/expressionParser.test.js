@@ -12,9 +12,11 @@ const oneTwo = ['one', 'two'];
 const datetime = require('../lib/extendedFunctions/datetime');
 const uri = require('../lib/extendedFunctions/uri');
 const timex = require('../lib/extendedFunctions/timex');
+const regex = require('../lib/extendedFunctions/regex');
 Expression.extend(datetime.default);
 Expression.extend(uri.default);
 Expression.extend(timex.default);
+Expression.extend(regex.default);
 
 const testCases = [
     {

@@ -6,13 +6,13 @@
  * Licensed under the MIT License.
  */
 
-import { CommonRegex } from '../commonRegex';
-import { Constant } from '../constant';
-import { Expression } from '../expression';
-import { EvaluateExpressionDelegate, ExpressionEvaluator } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { ReturnType } from '../returnType';
+import { CommonRegex } from '../../commonRegex';
+import { Constant } from '../../constant';
+import { Expression } from '../../expression';
+import { EvaluateExpressionDelegate, ExpressionEvaluator } from '../../expressionEvaluator';
+import { FunctionUtils } from '../../functionUtils';
+import { ReturnType } from '../../returnType';
+import { ExpressionType } from './types';
 
 /**
  * Return true if a given string matches a specified regular expression pattern.
