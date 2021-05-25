@@ -6,24 +6,24 @@
  * Licensed under the MIT License.
  */
 
-import { Expression } from '../expression';
-import { ExpressionEvaluator, ValueWithError } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { InternalFunctionUtils } from '../functionUtils.internal';
-import { MemoryInterface } from '../memory/memoryInterface';
-import { Options } from '../options';
-import { ReturnType } from '../returnType';
+ import { Expression } from '../../expression';
+ import { ExpressionEvaluator, ValueWithError } from '../../expressionEvaluator';
+ import { FunctionUtils } from '../../functionUtils';
+ import { InternalFunctionUtils } from '../../functionUtils.internal';
+ import { MemoryInterface } from '../../memory/memoryInterface';
+ import { Options } from '../../options';
+ import { ReturnType } from '../../returnType';
+ import { ExpressionType } from './types';
 
 /**
- * Return the scheme value of a unified resource identifier (URI).
+ * Return the query value of a unified resource identifier (URI).
  */
-export class UriScheme extends ExpressionEvaluator {
+export class UriQuery extends ExpressionEvaluator {
     /**
-     * Initializes a new instance of the [UriScheme](xref:adaptive-expressions.UriScheme) class.
+     * Initializes a new instance of the [UriQuery](xref:adaptive-expressions.UriQuery) class.
      */
     public constructor() {
-        super(ExpressionType.UriScheme, UriScheme.evaluator, ReturnType.String, FunctionUtils.validateUnary);
+        super(ExpressionType.UriQuery, UriQuery.evaluator, ReturnType.String, FunctionUtils.validateUnary);
     }
 
     /**
@@ -35,7 +35,7 @@ export class UriScheme extends ExpressionEvaluator {
         let error = childrenError;
         if (!error) {
             if (typeof args[0] === 'string') {
-                ({ value, error } = UriScheme.evalUriScheme(args[0]));
+                ({ value, error } = UriQuery.evalUriQuery(args[0]));
             } else {
                 error = `${expr} should contain a URI string.`;
             }
@@ -47,13 +47,13 @@ export class UriScheme extends ExpressionEvaluator {
     /**
      * @private
      */
-    private static evalUriScheme(uri: string): ValueWithError {
+    private static evalUriQuery(uri: string): ValueWithError {
         let result: string;
         const { value: parsed, error: parseError } = InternalFunctionUtils.parseUri(uri);
         let error = parseError;
         if (!error) {
             try {
-                result = parsed.protocol.replace(':', '');
+                result = parsed.search;
             } catch (e) {
                 error = 'invalid operation, input uri should be an absolute URI';
             }

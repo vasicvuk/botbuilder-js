@@ -68,7 +68,6 @@ export class ExpressionType {
     public static readonly TitleCase: string = 'titleCase';
 
     // DateTime
-    public static readonly AddDays: string = 'addDays';
     public static readonly AddHours: string = 'addHours';
     public static readonly AddMinutes: string = 'addMinutes';
     public static readonly AddSeconds: string = 'addSeconds';
@@ -174,15 +173,6 @@ export class ExpressionType {
     public static readonly Merge: string = 'merge';
     public static readonly XML: string = 'xml';
     public static readonly XPath: string = 'xPath';
-
-    // URI parsing functions
-    public static readonly UriHost: string = 'uriHost';
-    public static readonly UriPath: string = 'uriPath';
-    public static readonly UriPathAndQuery: string = 'uriPathAndQuery';
-    public static readonly UriPort: string = 'uriPort';
-    public static readonly UriQuery: string = 'uriQuery';
-    public static readonly UriScheme: string = 'uriScheme';
-
     // Regar expression
     public static readonly IsMatch: string = 'isMatch';
 

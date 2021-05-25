@@ -265,6 +265,10 @@ export class Expression {
         return new Expression(ExpressionType.Lambda, new ExpressionEvaluator(ExpressionType.Lambda, func));
     }
 
+    public static extend(plugin) {
+        plugin();
+    }
+
     /**
      * Construct an expression from a lamba expression over the state.
      * Exceptions will be caught and surfaced as an error string.

@@ -6,29 +6,24 @@
  * Licensed under the MIT License.
  */
 
-import { Expression } from '../expression';
-import { ExpressionEvaluator, ValueWithError } from '../expressionEvaluator';
-import { ExpressionType } from '../expressionType';
-import { FunctionUtils } from '../functionUtils';
-import { InternalFunctionUtils } from '../functionUtils.internal';
-import { MemoryInterface } from '../memory/memoryInterface';
-import { Options } from '../options';
-import { ReturnType } from '../returnType';
+ import { Expression } from '../../expression';
+ import { ExpressionEvaluator, ValueWithError } from '../../expressionEvaluator';
+ import { FunctionUtils } from '../../functionUtils';
+ import { InternalFunctionUtils } from '../../functionUtils.internal';
+ import { MemoryInterface } from '../../memory/memoryInterface';
+ import { Options } from '../../options';
+ import { ReturnType } from '../../returnType';
+ import { ExpressionType } from './types';
 
 /**
- * Return the path and query value of a unified resource identifier (URI).
+ * Return the port value of a unified resource identifier (URI).
  */
-export class UriPathAndQuery extends ExpressionEvaluator {
+export class UriPort extends ExpressionEvaluator {
     /**
-     * Initializes a new instance of the [UriPathAndQuery](xref:adaptive-expressions.UriPathAndQuery) class.
+     * Initializes a new instance of the [UriPort](xref:adaptive-expressions.UriPort) class.
      */
     public constructor() {
-        super(
-            ExpressionType.UriPathAndQuery,
-            UriPathAndQuery.evaluator,
-            ReturnType.String,
-            FunctionUtils.validateUnary
-        );
+        super(ExpressionType.UriPort, UriPort.evaluator, ReturnType.Number, FunctionUtils.validateUnary);
     }
 
     /**
@@ -40,7 +35,7 @@ export class UriPathAndQuery extends ExpressionEvaluator {
         let error = childrenError;
         if (!error) {
             if (typeof args[0] === 'string') {
-                ({ value, error } = UriPathAndQuery.evalUriPathAndQuery(args[0]));
+                ({ value, error } = UriPort.evalUriPort(args[0]));
             } else {
                 error = `${expr} should contain a URI string.`;
             }
@@ -52,13 +47,13 @@ export class UriPathAndQuery extends ExpressionEvaluator {
     /**
      * @private
      */
-    private static evalUriPathAndQuery(uri: string): ValueWithError {
-        let result: string;
+    private static evalUriPort(uri: string): ValueWithError {
+        let result: number;
         const { value: parsed, error: parseError } = InternalFunctionUtils.parseUri(uri);
         let error = parseError;
         if (!error) {
             try {
-                result = parsed.pathname + parsed.search;
+                result = parseInt(parsed.port);
             } catch (e) {
                 error = 'invalid operation, input uri should be an absolute URI';
             }

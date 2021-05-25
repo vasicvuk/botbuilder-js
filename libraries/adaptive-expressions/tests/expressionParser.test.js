@@ -5,10 +5,12 @@ const { Expression, SimpleObjectMemory, FunctionUtils, Options, NumericEvaluator
 const { TimexProperty } = require('@microsoft/recognizers-text-data-types-timex-expression');
 const { useFakeTimers } = require('sinon');
 const os = require('os');
-
+const datetime = require('../lib/extendedFunctions/datetime');
+const uri = require('../lib/extendedFunctions/uri');
 const one = ['one'];
 const oneTwo = ['one', 'two'];
-
+Expression.extend(datetime.default);
+Expression.extend(uri.default);
 const testCases = [
     {
         label: 'accessProperty and accessIndex',
