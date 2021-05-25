@@ -28,6 +28,7 @@ export class ExpressionType {
     public static readonly Round: string = 'round';
     public static readonly Abs: string = 'abs';
     public static readonly Sqrt: string = 'sqrt';
+    public static readonly Rand: string = 'rand';
 
     // Comparisons
     public static readonly LessThan: string = '<';
@@ -70,9 +71,9 @@ export class ExpressionType {
     // Memory
     public static readonly Accessor: string = 'Accessor';
     public static readonly Element: string = 'Element';
-    public static readonly CreateArray: string = 'createArray';
 
     // Collection
+    public static readonly CreateArray: string = 'createArray';
     public static readonly First: string = 'first';
     public static readonly Last: string = 'last';
     public static readonly Foreach: string = 'foreach';
@@ -97,7 +98,6 @@ export class ExpressionType {
     public static readonly Constant: string = 'Constant';
     public static readonly Lambda: string = 'Lambda';
     public static readonly If: string = 'if';
-    public static readonly Rand: string = 'rand';
 
     // Object manipulation and construction functions
     public static readonly Json: string = 'json';
