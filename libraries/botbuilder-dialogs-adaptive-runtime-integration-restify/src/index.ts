@@ -4,7 +4,8 @@
 import * as t from 'runtypes';
 import path from 'path';
 import restify from 'restify';
-import type { ActivityHandlerBase, BotFrameworkHttpAdapter, ChannelServiceRoutes } from 'botbuilder';
+import type { ActivityHandlerBase, BotFrameworkAdapter, ChannelServiceRoutes } from 'botbuilder';
+import { Configuration, ConfigurationConstants, getRuntimeServices } from 'botbuilder-dialogs-adaptive-runtime';
 import type { ServiceCollection } from 'botbuilder-dialogs-adaptive-runtime-core';
 import { Configuration, getRuntimeServices } from 'botbuilder-dialogs-adaptive-runtime';
 
@@ -149,7 +150,7 @@ export async function makeServer(
 
     const adapters =
         configuration.type(
-            ['runtimeSettings', 'adapters'],
+            [ConfigurationConstants.RuntimeSettingsKey, 'adapters'],
             t.Array(
                 t.Record({
                     name: t.String,

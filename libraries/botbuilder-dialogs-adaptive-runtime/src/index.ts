@@ -59,6 +59,7 @@ import {
     createBotFrameworkAuthenticationFromConfiguration,
 } from 'botbuilder';
 import { ConfigurationAdaptiveDialogBot } from './configurationAdaptiveDialogBot';
+import { ConfigurationConstants } from './configurationConstants';
 
 function addFeatures(services: ServiceCollection, configuration: Configuration): void {
     services.composeFactory<
@@ -146,7 +147,7 @@ function addStorage(services: ServiceCollection, configuration: Configuration): 
     services.addFactory('userState', ['storage'], ({ storage }) => new UserState(storage));
 
     services.addFactory('storage', () => {
-        const storage = configuration.string(['runtimeSettings', 'storage']);
+        const storage = configuration.string([ConfigurationConstants.RuntimeSettingsKey, 'storage']);
 
         switch (storage) {
             case 'BlobsStorage': {
@@ -218,7 +219,10 @@ function addSkills(services: ServiceCollection, configuration: Configuration): v
 
     services.addFactory('authenticationConfiguration', () => {
         const allowedCallers =
-            configuration.type(['runtimeSettings', 'skills', 'allowedCallers'], t.Array(t.String)) ?? [];
+            configuration.type(
+                [ConfigurationConstants.RuntimeSettingsKey, 'skills', 'allowedCallers'],
+                t.Array(t.String)
+            ) ?? [];
 
         return new AuthenticationConfiguration(
             undefined,
@@ -359,7 +363,7 @@ async function addSettingsBotComponents(services: ServiceCollection, configurati
 
     const components =
         configuration.type(
-            ['runtimeSettings', 'components'],
+            [ConfigurationConstants.RuntimeSettingsKey, 'components'],
             t.Array(
                 t.Record({
                     name: t.String,
@@ -389,7 +393,7 @@ async function addSettingsBotComponents(services: ServiceCollection, configurati
 // - Liberal `||` needed as many settings are initialized as `""` and should still be overridden
 // - Any generated files take precedence over `appsettings.json`.
 function addComposerConfiguration(configuration: Configuration): void {
-    const botRoot = configuration.string(['bot']) || '.';
+    const botRoot = configuration.string([ConfigurationConstants.BotKey]) || '.';
     configuration.set(['BotRoot'], botRoot);
 
     const luisRegion =
@@ -419,11 +423,11 @@ function addComposerConfiguration(configuration: Configuration): void {
 
 async function normalizeConfiguration(configuration: Configuration, applicationRoot: string): Promise<void> {
     // Override applicationRoot setting
-    configuration.set(['applicationRoot'], applicationRoot);
+    configuration.set([ConfigurationConstants.ApplicationRootKey], applicationRoot);
 
     // Override root dialog setting
     configuration.set(
-        ['defaultRootDialog'],
+        [ConfigurationConstants.RootDialogKey],
         await new Promise<string | undefined>((resolve, reject) =>
             // eslint-disable-next-line security/detect-non-literal-fs-filename
             fs.readdir(applicationRoot, (err, files) =>
@@ -524,7 +528,7 @@ export async function getRuntimeServices(
     registerLuisComponents(services, configuration);
     registerQnAComponents(services, configuration);
 
-    const runtimeSettings = configuration.bind(['runtimeSettings']);
+    const runtimeSettings = configuration.bind([ConfigurationConstants.RuntimeSettingsKey]);
 
     addCoreBot(services, configuration);
     addFeatures(services, runtimeSettings.bind(['features']));

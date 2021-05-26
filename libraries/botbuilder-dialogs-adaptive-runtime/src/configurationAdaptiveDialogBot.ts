@@ -7,7 +7,11 @@ import { Configuration } from './configuration';
 import { Dialog, MemoryScope, PathResolver } from 'botbuilder-dialogs';
 import { ResourceExplorer } from 'botbuilder-dialogs-declarative';
 
-import { BotTelemetryClient, ConversationState, SkillConversationIdFactoryBase, UserState } from 'botbuilder-core';
+import { BotTelemetryClient, ConversationState, SkillConversationIdFactoryBase, UserState } from 'botbuilder';
+import { TelemetryClient } from 'applicationinsights';
+import { ConfigurationConstants } from './configurationConstants';
+
+const defaultLanguageGeneratorId = 'main.lg';
 
 export class ConfigurationAdaptiveDialogBot extends AdaptiveDialogBot {
     constructor(
@@ -17,20 +21,20 @@ export class ConfigurationAdaptiveDialogBot extends AdaptiveDialogBot {
         userState: UserState,
         skillConversationIdFactoryBase: SkillConversationIdFactoryBase,
         languagePolicy: LanguagePolicy,
-        botFrameworkAuthentication: BotFrameworkAuthentication,
-        telemetryClient: BotTelemetryClient,
-        memoryScopes: MemoryScope[],
-        pathResolvers: PathResolver[],
-        dialogs: Dialog[]
+        botFrameworkAuthentication: BotFrameworkAuthentication = BotFrameworkAuthenticationFactory.create(),
+        telemetryClient: BotTelemetryClient = new TelemetryClient(),
+        memoryScopes: MemoryScope[] = [],
+        pathResolvers: PathResolver[] = [],
+        dialogs: Dialog[] = []
     ) {
-        const adaptiveDialogId = configuration.string(['defaultRootDialog']);
+        const adaptiveDialogId = configuration.string([ConfigurationConstants.RootDialogKey]);
         if (adaptiveDialogId == null) {
-            throw new TypeError('...');
+            throw new TypeError('defaultRootDialog not found in configuration.');
         }
 
         super(
             adaptiveDialogId,
-            configuration.string(['defaultLg']) ?? 'main.lg',
+            configuration.string([ConfigurationConstants.LanguageGeneratorKey]) ?? defaultLanguageGeneratorId,
             resourceExplorer,
             conversationState,
             userState,

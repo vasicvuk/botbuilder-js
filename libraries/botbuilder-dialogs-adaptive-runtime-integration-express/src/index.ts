@@ -6,6 +6,8 @@ import express from 'express';
 import path from 'path';
 import type { ActivityHandlerBase, BotFrameworkHttpAdapter, ChannelServiceRoutes } from 'botbuilder';
 import type { Server } from 'http';
+import type { ActivityHandlerBase, BotFrameworkAdapter, ChannelServiceRoutes } from 'botbuilder';
+import { Configuration, ConfigurationConstants, getRuntimeServices } from 'botbuilder-dialogs-adaptive-runtime';
 import type { ServiceCollection } from 'botbuilder-dialogs-adaptive-runtime-core';
 import { Configuration, getRuntimeServices } from 'botbuilder-dialogs-adaptive-runtime';
 import { json, urlencoded } from 'body-parser';
@@ -153,7 +155,7 @@ export async function makeApp(
 
     const adapters =
         configuration.type(
-            ['runtimeSettings', 'adapters'],
+            [ConfigurationConstants.RuntimeSettingsKey, 'adapters'],
             t.Array(
                 t.Record({
                     name: t.String,

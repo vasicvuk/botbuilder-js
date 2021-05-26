@@ -7,6 +7,7 @@ import { Configuration, getRuntimeServices } from '../src';
 import { CosmosDbPartitionedStorage } from 'botbuilder-azure';
 import { ok, strictEqual } from 'assert';
 import { ServiceCollection, Configuration as CoreConfiguration } from 'botbuilder-dialogs-adaptive-runtime-core';
+import { ConfigurationConstants } from '../src/configurationConstants';
 
 describe('getRuntimeServices', function () {
     it('works', async function () {
@@ -76,7 +77,7 @@ describe('getRuntimeServices', function () {
         it('supports blobs storage', async function () {
             const configuration = new Configuration().argv().env();
 
-            configuration.set(['runtimeSettings', 'storage'], 'BlobsStorage');
+            configuration.set([ConfigurationConstants.RuntimeSettingsKey, 'storage'], 'BlobsStorage');
 
             configuration.set(['BlobsStorage'], {
                 connectionString: 'UseDevelopmentStorage=true',
@@ -93,7 +94,7 @@ describe('getRuntimeServices', function () {
         it('supports cosmos storage', async function () {
             const configuration = new Configuration().argv().env();
 
-            configuration.set(['runtimeSettings', 'storage'], 'CosmosDbPartitionedStorage');
+            configuration.set([ConfigurationConstants.RuntimeSettingsKey, 'storage'], 'CosmosDbPartitionedStorage');
 
             configuration.set(['CosmosDbPartitionedStorage'], {
                 authKey: 'authKey',
