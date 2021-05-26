@@ -9,7 +9,7 @@
 import { ExpressionType } from './types';
 import { FunctionUtils } from '../../functionUtils';
 import { InternalFunctionUtils } from '../../functionUtils.internal';
-import { ComparisonEvaluator } from './comparisonEvaluator';
+import { ComparisonEvaluator } from '../../builtinFunctions';
 
 /**
  * Return the Boolean version of a value.

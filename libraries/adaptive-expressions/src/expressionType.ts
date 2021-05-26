@@ -71,6 +71,8 @@ export class ExpressionType {
     // Memory
     public static readonly Accessor: string = 'Accessor';
     public static readonly Element: string = 'Element';
+    public static readonly SetPathToValue: string = 'setPathToValue';
+    public static readonly Coalesce: string = 'coalesce';
 
     // Collection
     public static readonly CreateArray: string = 'createArray';
@@ -105,21 +107,8 @@ export class ExpressionType {
     public static readonly RemoveProperty: string = 'removeProperty';
     public static readonly SetProperty: string = 'setProperty';
     public static readonly GetProperty: string = 'getProperty';
-    public static readonly Coalesce: string = 'coalesce';
     public static readonly JPath: string = 'jPath';
-    public static readonly SetPathToValue: string = 'setPathToValue';
     public static readonly Merge: string = 'merge';
-    public static readonly XML: string = 'xml';
-    public static readonly XPath: string = 'xPath';
-
-    //Type Checking
-    public static readonly IsString: string = 'isString';
-    public static readonly IsInteger: string = 'isInteger';
-    public static readonly IsArray: string = 'isArray';
-    public static readonly IsObject: string = 'isObject';
-    public static readonly IsFloat: string = 'isFloat';
-    public static readonly IsDateTime: string = 'isDateTime';
-    public static readonly IsBoolean: string = 'isBoolean';
 
     // StringOrValue
     public static readonly StringOrValue: string = 'stringOrValue';

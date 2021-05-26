@@ -73,13 +73,6 @@ export class ExpressionFunctions {
             new BuiltinFunctions.IndexOf(),
             new BuiltinFunctions.IndicesAndValues(),
             new BuiltinFunctions.Intersection(),
-            new BuiltinFunctions.IsArray(),
-            new BuiltinFunctions.IsBoolean(),
-            new BuiltinFunctions.IsDateTime(),
-            new BuiltinFunctions.IsFloat(),
-            new BuiltinFunctions.IsInteger(),
-            new BuiltinFunctions.IsObject(),
-            new BuiltinFunctions.IsString(),
             new BuiltinFunctions.Join(),
             new BuiltinFunctions.JPath(),
             new BuiltinFunctions.Json(),
@@ -129,8 +122,6 @@ export class ExpressionFunctions {
             new BuiltinFunctions.Union(),
             new BuiltinFunctions.Unique(),
             new BuiltinFunctions.Where(),
-            new BuiltinFunctions.XML(),
-            new BuiltinFunctions.XPath(),
         ];
 
         const lookup: Map<string, ExpressionEvaluator> = new Map<string, ExpressionEvaluator>();

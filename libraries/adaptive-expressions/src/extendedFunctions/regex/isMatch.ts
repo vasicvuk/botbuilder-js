@@ -51,7 +51,7 @@ export class IsMatch extends ExpressionEvaluator {
         FunctionUtils.validateArityAndAnyType(expression, 2, 2, ReturnType.String);
 
         const second: Expression = expression.children[1];
-        if (second.returnType === ReturnType.String && second.type === ExpressionType.Constant) {
+        if (second.returnType === ReturnType.String && second.type === 'Constant') {
             CommonRegex.CreateRegex((second as Constant).value.toString());
         }
     }

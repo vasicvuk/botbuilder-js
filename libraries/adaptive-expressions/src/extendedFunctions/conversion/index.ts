@@ -3,7 +3,7 @@ import { Base64 } from './base64';
 import { Base64ToBinary } from './base64ToBinary';
 import { Base64ToString } from './base64ToString';
 import { Binary } from './binary';
-import { BoolFunc } from './boolFuncFunc';
+import { BoolFunc } from './boolFunc';
 import { DataUri } from './dataUri';
 import { DataUriToBinary } from './dataUriToBinary';
 import { DataUriToString } from './dataUriToString';
