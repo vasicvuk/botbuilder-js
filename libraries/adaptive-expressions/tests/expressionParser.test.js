@@ -14,11 +14,15 @@ const uri = require('../lib/extendedFunctions/uri');
 const timex = require('../lib/extendedFunctions/timex');
 const regex = require('../lib/extendedFunctions/regex');
 const conversion = require('../lib/extendedFunctions/conversion');
+const xml = require('../lib/extendedFunctions/xml');
+const typechecking = require('../lib/extendedFunctions/typechecking');
 Expression.extend(datetime.default);
 Expression.extend(uri.default);
 Expression.extend(timex.default);
 Expression.extend(regex.default);
 Expression.extend(conversion.default);
+Expression.extend(xml.default);
+Expression.extend(typechecking.default);
 
 const testCases = [
     {
