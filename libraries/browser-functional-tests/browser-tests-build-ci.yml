@@ -71,11 +71,11 @@ steps:
 - script: yarn browser-functional-test firefox
   displayName: run firefox tests
 
-- task: AzureCLI@1
-  displayName: 'Delete Resource Group'
-  inputs:
-    azureSubscription: '$(AzureSubscription)'
-    scriptLocation: inlineScript
-    inlineScript: 'call az group delete -n $(TestResourceGroup) --yes'
+# - task: AzureCLI@1
+#   displayName: 'Delete Resource Group'
+#   inputs:
+#     azureSubscription: '$(AzureSubscription)'
+#     scriptLocation: inlineScript
+#     inlineScript: 'call az group delete -n $(TestResourceGroup) --yes'
 
-  condition: succeededOrFailed()
+#   condition: succeededOrFailed()
