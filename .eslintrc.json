@@ -129,11 +129,23 @@
         "libraries/botbuilder-ai*/**/*.ts",
         "libraries/botbuilder-applicationinsights/**/*.ts",
         "libraries/botbuilder-azure*/**/*.ts",
-        "libraries/botbuilder-dialogs-adaptive-runtime*/**/*.ts"
+        "libraries/botbuilder-dialogs-adaptive-runtime*/**/*.ts",
+        "libraries/botbuilder-dialogs-adaptive-testing/**/*.ts",
+        "libraries/botbuilder-dialogs-declarative/**/*.ts",
+        "libraries/botbuilder-lg/**/*.ts",
+        "libraries/botbuilder-stdlib/**/*.ts"
       ],
       "rules": {
           "@typescript-eslint/explicit-member-accessibility": ["error", {"accessibility": "no-public"}]
       }
-  }
+    },
+    {
+      "files": [
+        "libraries/**/generated/**/*.ts"
+      ],
+      "rules": {
+          "@typescript-eslint/explicit-member-accessibility": ["off"]
+      }
+    }
   ]
 }

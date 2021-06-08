@@ -11,28 +11,26 @@
  */
 export class LGResource {
     /**
-     * esource id.
+     * Resource id.
      */
-    public id: string;
+    id: string;
     /**
      * The full path to the resource on disk.
      */
-    public fullName: string;
+    fullName: string;
     /**
      * Resource content.
      */
-    public content: string;
-    /**
-     * Source of this template
-     */
+    content: string;
 
     /**
      * Creates a new instance of the [LGResource](xref:botbuilder-lg.LGResource) class.
+     *
      * @param id Resource id.
      * @param fullName The full path to the resource on disk.
      * @param content Resource content.
      */
-    public constructor(id: string, fullName: string, content: string) {
+    constructor(id: string, fullName: string, content: string) {
         this.id = id || '';
         this.fullName = fullName || '';
         this.content = content;

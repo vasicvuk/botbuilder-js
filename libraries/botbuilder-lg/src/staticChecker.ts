@@ -7,7 +7,7 @@
  */
 import { ParserRuleContext } from 'antlr4ts';
 import { AbstractParseTreeVisitor, TerminalNode } from 'antlr4ts/tree';
-import { ExpressionParser, ExpressionParserInterface } from 'adaptive-expressions';
+import { ExpressionParserInterface } from 'adaptive-expressions';
 import { Diagnostic, DiagnosticSeverity } from './diagnostic';
 import { Evaluator } from './evaluator';
 import * as lp from './generated/LGTemplateParser';
@@ -30,9 +30,10 @@ export class StaticChecker
 
     /**
      * Creates a new instance of the [StaticChecker](xref:botbuilder-lg.StaticChecker) class.
+     *
      * @param templates [Templates](xref:botbuilder-lg.Templates) to be checked.
      */
-    public constructor(templates: Templates) {
+    constructor(templates: Templates) {
         super();
         this.templates = templates;
     }
@@ -53,9 +54,10 @@ export class StaticChecker
 
     /**
      * Return error messages list.
+     *
      * @returns Report result.
      */
-    public check(): Diagnostic[] {
+    check(): Diagnostic[] {
         const result: Diagnostic[] = [];
 
         if (this.templates.allTemplates.length === 0) {
@@ -103,9 +105,11 @@ export class StaticChecker
 
     /**
      * Visit a parse tree produced by `LGTemplateParser.normalTemplateBody`.
+     *
      * @param context The parse tree.
+     * @returns An array of [Diagnostic](xref:botbuilder-lg.Diagnostic) instances.
      */
-    public visitNormalTemplateBody(context: lp.NormalTemplateBodyContext): Diagnostic[] {
+    visitNormalTemplateBody(context: lp.NormalTemplateBodyContext): Diagnostic[] {
         let result: Diagnostic[] = [];
         for (const templateStr of context.templateString()) {
             const errorTemplateStr: lp.ErrorTemplateStringContext = templateStr.errorTemplateString();
@@ -122,9 +126,11 @@ export class StaticChecker
 
     /**
      * Visit a parse tree produced by `LGTemplateParser.structuredTemplateBody`.
+     *
      * @param context The parse tree.
+     * @returns An array of [Diagnostic](xref:botbuilder-lg.Diagnostic) instances.
      */
-    public visitStructuredTemplateBody(context: lp.StructuredTemplateBodyContext): Diagnostic[] {
+    visitStructuredTemplateBody(context: lp.StructuredTemplateBodyContext): Diagnostic[] {
         let result: Diagnostic[] = [];
 
         const errorName = context.structuredBodyNameLine().errorStructuredName();
@@ -173,9 +179,11 @@ export class StaticChecker
 
     /**
      * Visit a parse tree produced by the `ifElseBody` labeled alternative in `LGTemplateParser.body`.
+     *
      * @param context The parse tree.
+     * @returns An array of [Diagnostic](xref:botbuilder-lg.Diagnostic) instances.
      */
-    public visitIfElseBody(context: lp.IfElseBodyContext): Diagnostic[] {
+    visitIfElseBody(context: lp.IfElseBodyContext): Diagnostic[] {
         let result: Diagnostic[] = [];
         const ifRules: lp.IfConditionRuleContext[] = context.ifElseTemplateBody().ifConditionRule();
 
@@ -258,9 +266,11 @@ export class StaticChecker
 
     /**
      * Visit a parse tree produced by the `switchCaseBody` labeled alternative in `LGTemplateParser.body`.
+     *
      * @param context The parse tree.
+     * @returns An array of [Diagnostic](xref:botbuilder-lg.Diagnostic) instances.
      */
-    public visitSwitchCaseBody(context: lp.SwitchCaseBodyContext): Diagnostic[] {
+    visitSwitchCaseBody(context: lp.SwitchCaseBodyContext): Diagnostic[] {
         let result: Diagnostic[] = [];
         const switchCaseNodes: lp.SwitchCaseRuleContext[] = context.switchCaseTemplateBody().switchCaseRule();
         let idx = 0;
@@ -363,9 +373,11 @@ export class StaticChecker
 
     /**
      * Visit a parse tree produced by `LGTemplateParser.normalTemplateString`.
+     *
      * @param context The parse tree.
+     * @returns An array of [Diagnostic](xref:botbuilder-lg.Diagnostic) instances.
      */
-    public visitNormalTemplateString(context: lp.NormalTemplateStringContext): Diagnostic[] {
+    visitNormalTemplateString(context: lp.NormalTemplateStringContext): Diagnostic[] {
         const prefixErrorMsg = TemplateExtensions.getPrefixErrorMessage(context);
         let result: Diagnostic[] = [];
 
@@ -384,6 +396,7 @@ export class StaticChecker
 
     /**
      * Gets the default value returned by visitor methods.
+     *
      * @returns Empty [Diagnostic](xref:botbuilder-lg.Diagnostic) array.
      */
     protected defaultResult(): Diagnostic[] {

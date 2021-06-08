@@ -6,7 +6,9 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
+
 import { AbstractParseTreeVisitor } from 'antlr4ts/tree';
+// eslint-disable-next-line lodash/import-scope
 import { keyBy } from 'lodash';
 import { Expression, ExpressionParserInterface } from 'adaptive-expressions';
 import { EvaluationTarget } from './evaluationTarget';
@@ -15,7 +17,6 @@ import * as lp from './generated/LGTemplateParser';
 import { LGTemplateParserVisitor } from './generated/LGTemplateParserVisitor';
 import { TemplateExtensions } from './templateExtensions';
 import { AnalyzerResult } from './analyzerResult';
-import { TemplateErrors } from './templateErrors';
 import { Templates } from './templates';
 import { EvaluationOptions } from './evaluationOptions';
 import { Template } from './template';
@@ -29,7 +30,7 @@ export class Analyzer
     /**
      * Templates.
      */
-    public readonly templates: Templates;
+    readonly templates: Templates;
 
     private readonly templateMap: { [name: string]: Template };
     private readonly evalutationTargetStack: EvaluationTarget[] = [];
@@ -37,10 +38,11 @@ export class Analyzer
 
     /**
      * Creates a new instance of the [Analyzer](xref:botbuilder-lg.Analyzer) class.
+     *
      * @param templates Templates.
      * @param opt Options for LG.
      */
-    public constructor(templates: Templates, opt?: EvaluationOptions) {
+    constructor(templates: Templates, opt?: EvaluationOptions) {
         super();
         this.templates = templates;
         this.templateMap = keyBy(templates.allTemplates, (t: Template): string => t.name);
@@ -52,10 +54,11 @@ export class Analyzer
 
     /**
      * Analyze a template to get the static analyzer results.
+     *
      * @param templateName Template name.
      * @returns Analyze result including variables and template references.
      */
-    public analyzeTemplate(templateName: string): AnalyzerResult {
+    analyzeTemplate(templateName: string): AnalyzerResult {
         if (
             !(templateName in this.templateMap) ||
             this.evalutationTargetStack.find((u: EvaluationTarget): boolean => u.templateName === templateName) !==
@@ -79,19 +82,21 @@ export class Analyzer
 
     /**
      * Visit a parse tree produced by the normalBody labeled alternative in LGTemplateParser.body.
+     *
      * @param ctx The parse tree.
      * @returns The [AnalyzerResult](xref:botbuilder-lg.AnalyzerResult) instance.
      */
-    public visitNormalBody(ctx: lp.NormalBodyContext): AnalyzerResult {
+    visitNormalBody(ctx: lp.NormalBodyContext): AnalyzerResult {
         return this.visit(ctx.normalTemplateBody());
     }
 
     /**
      * Visit a parse tree produced by LGTemplateParser.normalTemplateBody.
+     *
      * @param ctx The parse tree.
      * @returns The [AnalyzerResult](xref:botbuilder-lg.AnalyzerResult) instance.
      */
-    public visitNormalTemplateBody(ctx: lp.NormalTemplateBodyContext): AnalyzerResult {
+    visitNormalTemplateBody(ctx: lp.NormalTemplateBodyContext): AnalyzerResult {
         const result: AnalyzerResult = new AnalyzerResult();
         for (const templateStr of ctx.templateString()) {
             result.union(this.visit(templateStr.normalTemplateString()));
@@ -102,10 +107,11 @@ export class Analyzer
 
     /**
      * Visit a parse tree produced by LGTemplateParser.structuredTemplateBody.
+     *
      * @param ctx The parse tree.
      * @returns The [AnalyzerResult](xref:botbuilder-lg.AnalyzerResult) instance.
      */
-    public visitStructuredTemplateBody(ctx: lp.StructuredTemplateBodyContext): AnalyzerResult {
+    visitStructuredTemplateBody(ctx: lp.StructuredTemplateBodyContext): AnalyzerResult {
         const result: AnalyzerResult = new AnalyzerResult();
 
         const bodys = ctx.structuredBodyContentLine();
@@ -123,10 +129,11 @@ export class Analyzer
 
     /**
      * Visit a parse tree produced by LGTemplateParser.structuredValue.
+     *
      * @param ctx The parse tree.
      * @returns The [AnalyzerResult](xref:botbuilder-lg.AnalyzerResult) instance.
      */
-    public visitStructureValue(ctx: lp.KeyValueStructureLineContext): AnalyzerResult {
+    visitStructureValue(ctx: lp.KeyValueStructureLineContext): AnalyzerResult {
         const result: AnalyzerResult = new AnalyzerResult();
 
         const values = ctx.keyValueStructureValue();
@@ -146,10 +153,11 @@ export class Analyzer
 
     /**
      * Visit a parse tree produced by the ifElseBody labeled alternative in LGTemplateParser.body.
+     *
      * @param ctx The parse tree.
      * @returns The [AnalyzerResult](xref:botbuilder-lg.AnalyzerResult) instance.
      */
-    public visitIfElseBody(ctx: lp.IfElseBodyContext): AnalyzerResult {
+    visitIfElseBody(ctx: lp.IfElseBodyContext): AnalyzerResult {
         const result: AnalyzerResult = new AnalyzerResult();
 
         const ifRules: lp.IfConditionRuleContext[] = ctx.ifElseTemplateBody().ifConditionRule();
@@ -168,10 +176,11 @@ export class Analyzer
 
     /**
      * Visit a parse tree produced by the switchCaseBody labeled alternative in LGTemplateParser.body.
+     *
      * @param ctx The parse tree.
      * @returns The [AnalyzerResult](xref:botbuilder-lg.AnalyzerResult) instance.
      */
-    public visitSwitchCaseBody(ctx: lp.SwitchCaseBodyContext): AnalyzerResult {
+    visitSwitchCaseBody(ctx: lp.SwitchCaseBodyContext): AnalyzerResult {
         const result: AnalyzerResult = new AnalyzerResult();
         const switchCaseNodes: lp.SwitchCaseRuleContext[] = ctx.switchCaseTemplateBody().switchCaseRule();
         for (const iterNode of switchCaseNodes) {
@@ -189,10 +198,11 @@ export class Analyzer
 
     /**
      * Visit a parse tree produced by LGTemplateParser.normalTemplateString.
+     *
      * @param ctx The parse tree.
      * @returns The [AnalyzerResult](xref:botbuilder-lg.AnalyzerResult) instance.
      */
-    public visitNormalTemplateString(ctx: lp.NormalTemplateStringContext): AnalyzerResult {
+    visitNormalTemplateString(ctx: lp.NormalTemplateStringContext): AnalyzerResult {
         const result: AnalyzerResult = new AnalyzerResult();
 
         for (const expression of ctx.expression()) {
@@ -204,16 +214,13 @@ export class Analyzer
 
     /**
      * Gets the default value returned by visitor methods.
-     * @returns An instance of the AnalyzerResult class.
+     *
      * @returns The [AnalyzerResult](xref:botbuilder-lg.AnalyzerResult) instance.
      */
     protected defaultResult(): AnalyzerResult {
         return new AnalyzerResult();
     }
 
-    /**
-     * @private
-     */
     private analyzeExpressionDirectly(exp: Expression): AnalyzerResult {
         const result: AnalyzerResult = new AnalyzerResult();
 
@@ -239,9 +246,6 @@ export class Analyzer
         return result;
     }
 
-    /**
-     * @private
-     */
     private analyzeExpression(exp: string): AnalyzerResult {
         const result: AnalyzerResult = new AnalyzerResult();
         exp = TemplateExtensions.trimExpression(exp);

@@ -6,6 +6,7 @@
  * Licensed under the MIT License.
  */
 import { AbstractParseTreeVisitor, TerminalNode } from 'antlr4ts/tree';
+// eslint-disable-next-line lodash/import-scope
 import { keyBy } from 'lodash';
 import * as lp from './generated/LGTemplateParser';
 import { LGTemplateParserVisitor } from './generated/LGTemplateParserVisitor';
@@ -17,15 +18,16 @@ import { Template } from './template';
 export class Extractor
     extends AbstractParseTreeVisitor<Map<string, string[]>>
     implements LGTemplateParserVisitor<Map<string, string[]>> {
-    public readonly templates: Template[];
+    readonly templates: Template[];
 
-    public readonly templateMap: Record<string, Template>;
+    readonly templateMap: Record<string, Template>;
 
     /**
      * Creates a new instance of the [Extractor](xref:botbuilder-lg.Extractor) class.
+     *
      * @param templates Template list.
      */
-    public constructor(templates: Template[]) {
+    constructor(templates: Template[]) {
         super();
         this.templates = templates;
         this.templateMap = keyBy(templates, (t: Template): string => t.name);
@@ -33,9 +35,10 @@ export class Extractor
 
     /**
      * Extracts the templates and returns a map with their names and bodies.
+     *
      * @returns Map object with template names and bodies.
      */
-    public extract(): Map<string, string[] | Map<string, string[]>>[] {
+    extract(): Map<string, string[] | Map<string, string[]>>[] {
         const result: Map<string, string[] | Map<string, string[]>>[] = [];
         this.templates.forEach((template: Template) => {
             const templateResult = new Map<string, string[] | Map<string, string[]>>();
@@ -64,10 +67,11 @@ export class Extractor
 
     /**
      * Visit a parse tree produced by LGTemplateParser.normalTemplateBody.
+     *
      * @param context The parse tree.
      * @returns The result of visiting the normal template body.
      */
-    public visitNormalTemplateBody(context: lp.NormalTemplateBodyContext): Map<string, string[]> {
+    visitNormalTemplateBody(context: lp.NormalTemplateBodyContext): Map<string, string[]> {
         const result = new Map<string, string[]>();
         for (const templateStr of context.templateString()) {
             result.set(templateStr.normalTemplateString().text, undefined);
@@ -78,10 +82,11 @@ export class Extractor
 
     /**
      * Visit a parse tree produced by the structuredBody labeled alternative in LGTemplateParser.body.
+     *
      * @param context The parse tree.
      * @returns The result of visiting the structured body.
      */
-    public visitStructuredBody(context: lp.StructuredBodyContext): Map<string, string[]> {
+    visitStructuredBody(context: lp.StructuredBodyContext): Map<string, string[]> {
         const result = new Map<string, string[]>();
         const lineStart = '    ';
         const structName = context.structuredTemplateBody().structuredBodyNameLine().text;
@@ -98,10 +103,11 @@ export class Extractor
 
     /**
      * Visit a parse tree produced by the ifElseBody labeled alternative in LGTemplateParser.body.
+     *
      * @param context The parse tree.
      * @returns The result of visiting the if else body.
      */
-    public visitIfElseBody(context: lp.IfElseBodyContext): Map<string, string[]> {
+    visitIfElseBody(context: lp.IfElseBodyContext): Map<string, string[]> {
         const result = new Map<string, string[]>();
         const ifRules: lp.IfConditionRuleContext[] = context.ifElseTemplateBody().ifConditionRule();
         for (const ifRule of ifRules) {
@@ -136,10 +142,11 @@ export class Extractor
 
     /**
      * Visit a parse tree produced by the switchCaseBody labeled alternative in LGTemplateParser.body.
+     *
      * @param context The parse tree.
      * @returns The result of visiting the switch case body.
      */
-    public visitSwitchCaseBody(context: lp.SwitchCaseBodyContext): Map<string, string[]> {
+    visitSwitchCaseBody(context: lp.SwitchCaseBodyContext): Map<string, string[]> {
         const result = new Map<string, string[]>();
         const switchCaseNodes: lp.SwitchCaseRuleContext[] = context.switchCaseTemplateBody().switchCaseRule();
         for (const iterNode of switchCaseNodes) {
@@ -175,7 +182,8 @@ export class Extractor
 
     /**
      * Gets the default value returned by visitor methods.
-     * @returns Empty Map<string,  string[]>.
+     *
+     * @returns Empty Map<string, string[]>.
      */
     protected defaultResult(): Map<string, string[]> {
         return new Map<string, string[]>();

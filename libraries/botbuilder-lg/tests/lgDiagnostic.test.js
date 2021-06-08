@@ -6,12 +6,12 @@ function GetExceptionExampleFilePath(fileName) {
 }
 
 function GetLGFile(fileName) {
-    var filePath = GetExceptionExampleFilePath(fileName);
+    const filePath = GetExceptionExampleFilePath(fileName);
     return Templates.parseFile(filePath);
 }
 
 function GetDiagnostics(fileName) {
-    var filePath = GetExceptionExampleFilePath(fileName);
+    const filePath = GetExceptionExampleFilePath(fileName);
     return Templates.parseFile(filePath).diagnostics;
 }
 

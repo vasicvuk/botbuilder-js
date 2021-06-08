@@ -28,7 +28,12 @@ import * as lp from './generated/LGFileParser';
 import { TemplateErrors } from './templateErrors';
 import { SourceRange } from './sourceRange';
 import { LGTemplateLexer } from './generated/LGTemplateLexer';
-import { LGTemplateParser, BodyContext, StructuredTemplateBodyContext, KeyValueStructureValueContext } from './generated/LGTemplateParser';
+import {
+    LGTemplateParser,
+    BodyContext,
+    StructuredTemplateBodyContext,
+    KeyValueStructureValueContext,
+} from './generated/LGTemplateParser';
 import { LGResource } from './lgResource';
 
 export declare type ImportResolverDelegate = (lgResource: LGResource, resourceId: string) => LGResource;
@@ -40,26 +45,27 @@ export class TemplatesParser {
     /**
      * Inline text id.
      */
-    public static readonly inlineContentId: string = 'inline content';
+    static readonly inlineContentId: string = 'inline content';
 
     /**
-     * option regex.
+     * Option regex.
      */
-    public static readonly optionRegex: RegExp = new RegExp(/>\s*!#(.*)$/);
+    static readonly optionRegex: RegExp = new RegExp(/>\s*!#(.*)$/);
 
     /**
      * Import regex.
      */
-    public static readonly importRegex: RegExp = new RegExp(/\[([^\]]*)\]\(([^)]*)\)([\w\s]*)/);
+    static readonly importRegex: RegExp = new RegExp(/\[([^\]]*)\]\(([^)]*)\)([\w\s]*)/);
 
     /**
-     * parse a file and return LG file.
-     * @param filePath LG absolute file path..
+     * Parse a file and return LG file.
+     *
+     * @param filePath LG absolute file path.
      * @param importResolver Resolver to resolve LG import id to template text.
      * @param expressionParser Expression parser for evaluating expressions.
      * @returns New lg file.
      */
-    public static parseFile(
+    static parseFile(
         filePath: string,
         importResolver?: ImportResolverDelegate,
         expressionParser?: ExpressionParser
@@ -72,6 +78,7 @@ export class TemplatesParser {
 
     /**
      * Parser to turn lg content into a Templates.
+     *
      * @deprecated This method will soon be deprecated. Use ParseResource instead.
      * @param content Text content contains lg templates.
      * @param id Id is the identifier of content. If importResolver is undefined, id must be a full path string.
@@ -79,7 +86,7 @@ export class TemplatesParser {
      * @param expressionParser Expression parser for evaluating expressions.
      * @returns Entity.
      */
-    public static parseText(
+    static parseText(
         content: string,
         id = '',
         importResolver?: ImportResolverDelegate,
@@ -91,13 +98,13 @@ export class TemplatesParser {
 
     /**
      * Parser to turn lg content into a Templates.
+     *
      * @param resource LG resource.
      * @param importResolver Resolver to resolve LG import id to template text.
      * @param expressionParser Expression parser for evaluating expressions.
-     * @param cachedTemplates Give the file path and templates to avoid parsing and to improve performance.
      * @returns Entity.
      */
-    public static parseResource(
+    static parseResource(
         resource: LGResource,
         importResolver?: ImportResolverDelegate,
         expressionParser?: ExpressionParser
@@ -107,12 +114,14 @@ export class TemplatesParser {
 
     /**
      * Parser to turn lg content into a Templates based on the original Templates.
+     *
      * @param content Text content contains lg templates.
-     * @param originalTemplates Original templates
+     * @param originalTemplates Original templates.
+     * @returns LG content Templates.
      */
-    public static parseTextWithRef(content: string, originalTemplates: Templates): Templates {
+    static parseTextWithRef(content: string, originalTemplates: Templates): Templates {
         if (!originalTemplates) {
-            throw Error(`templates is empty`);
+            throw Error('templates is empty');
         }
 
         const id = TemplatesParser.inlineContentId;
@@ -143,12 +152,15 @@ export class TemplatesParser {
 
         return newTemplates;
     }
+
     /**
      * Default import resolver, using relative/absolute file path to access the file content.
+     *
      * @param resource Original Resource.
      * @param resourceId Import path.
+     * @returns The default import resolver.
      */
-    public static defaultFileResolver(resource: LGResource, resourceId: string): LGResource {
+    static defaultFileResolver(resource: LGResource, resourceId: string): LGResource {
         // If the import id contains "#", we would cut it to use the left path.
         // for example: [import](a.b.c#d.lg), after convertion, id would be d.lg
         const hashIndex = resourceId.indexOf('#');
@@ -171,6 +183,7 @@ export class TemplatesParser {
 
     /**
      * Parser to turn lg content into a Templates.
+     *
      * @param resource LG resource.
      * @param importResolver Resolver to resolve LG import id to template text.
      * @param expressionParser Expression parser for evaluating expressions.
@@ -221,10 +234,11 @@ export class TemplatesParser {
 
     /**
      * Parse LG content and return the AST.
+     *
      * @param resource LG resource.
      * @returns The abstract syntax tree of lg file.
      */
-    public static antlrParseTemplates(resource: LGResource): FileContext {
+    static antlrParseTemplates(resource: LGResource): FileContext {
         if (!resource.content || resource.content.trim() === '') {
             return undefined;
         }
@@ -343,18 +357,21 @@ export class TemplatesTransformer extends AbstractParseTreeVisitor<void> impleme
 
     /**
      * Creates a new instance of the [TemplatesTransformer](xref:botbuilder-lg.TemplatesTransformer) class.
+     *
      * @param templates Templates.
      */
-    public constructor(templates: Templates) {
+    constructor(templates: Templates) {
         super();
         this.templates = templates;
     }
 
     /**
      * Transform the parse tree into templates.
+     *
      * @param parseTree Input abstract syntax tree.
+     * @returns The transformed [Templates](xref:botbuilder-lg.Templates).
      */
-    public transform(parseTree: ParseTree): Templates {
+    transform(parseTree: ParseTree): Templates {
         if (parseTree) {
             this.visit(parseTree);
         }
@@ -380,9 +397,10 @@ export class TemplatesTransformer extends AbstractParseTreeVisitor<void> impleme
 
     /**
      * Visit a parse tree produced by `LGFileParser.errorDefinition`.
+     *
      * @param context The parse tree.
      */
-    public visitErrorDefinition(context: lp.ErrorDefinitionContext): void {
+    visitErrorDefinition(context: lp.ErrorDefinitionContext): void {
         const lineContent = context.INVALID_LINE().text;
         if (lineContent === undefined || lineContent.trim() === '') {
             this.templates.diagnostics.push(
@@ -396,9 +414,10 @@ export class TemplatesTransformer extends AbstractParseTreeVisitor<void> impleme
 
     /**
      * Visit a parse tree produced by `LGFileParser.importDefinition`.
+     *
      * @param context The parse tree.
      */
-    public visitImportDefinition(context: lp.ImportDefinitionContext): void {
+    visitImportDefinition(context: lp.ImportDefinitionContext): void {
         const importStr = context.IMPORT().text;
         const groups = importStr.match(TemplatesParser.importRegex);
         if (!groups || (groups.length !== 3 && groups.length !== 4)) {
@@ -431,9 +450,10 @@ export class TemplatesTransformer extends AbstractParseTreeVisitor<void> impleme
 
     /**
      * Visit a parse tree produced by `LGFileParser.optionDefinition`.
+     *
      * @param context The parse tree.
      */
-    public visitOptionDefinition(context: lp.OptionDefinitionContext): void {
+    visitOptionDefinition(context: lp.OptionDefinitionContext): void {
         const optionStr = context.OPTION().text;
         let result = '';
         if (optionStr != undefined && optionStr.trim() !== '') {
@@ -450,9 +470,10 @@ export class TemplatesTransformer extends AbstractParseTreeVisitor<void> impleme
 
     /**
      * Visit a parse tree produced by `LGFileParser.templateDefinition`.
+     *
      * @param context The parse tree.
      */
-    public visitTemplateDefinition(context: lp.TemplateDefinitionContext): void {
+    visitTemplateDefinition(context: lp.TemplateDefinitionContext): void {
         const startLine = context.start.line;
 
         const templateNameLine = context.templateNameLine().TEMPLATE_NAME_LINE().text;
@@ -472,11 +493,7 @@ export class TemplatesTransformer extends AbstractParseTreeVisitor<void> impleme
 
             this.checkTemplateName(templateName, context.templateNameLine());
             this.checkTemplateParameters(parameters, context.templateNameLine());
-            this.checkTemplateBody(
-                template,
-                context.templateBody(),
-                startLine
-            );
+            this.checkTemplateBody(template, context.templateBody(), startLine);
 
             this.templates.push(template);
         }
@@ -514,11 +531,7 @@ export class TemplatesTransformer extends AbstractParseTreeVisitor<void> impleme
     /**
      * @private
      */
-    private checkTemplateBody(
-        template: Template,
-        context: lp.TemplateBodyContext,
-        startLine: number
-    ): BodyContext {
+    private checkTemplateBody(template: Template, context: lp.TemplateBodyContext, startLine: number): BodyContext {
         if (template.body === undefined || template.body.trim() === '') {
             const diagnostic = this.buildTemplatesDiagnostic(
                 TemplateErrors.noTemplateBody(template.name),
@@ -625,20 +638,20 @@ class TemplateBodyTransformer extends AbstractParseTreeVisitor<void> implements 
         this._template = template;
     }
 
-    protected defaultResult(): void {
+    protected defaultResult(): void {}
 
-    }
-
-    public transform(): Template {
+    transform(): Template {
         this.visit(this._template.templateBodyParseTree);
         return this._template;
     }
 
-    public visitStructuredTemplateBody(context: StructuredTemplateBodyContext): void {
-        if (!context.structuredBodyNameLine().errorStructuredName()
-         && context.structuredBodyEndLine()
-         && (!context.errorStructureLine() || context.errorStructureLine().length === 0)
-         && (context.structuredBodyContentLine() && context.structuredBodyContentLine().length > 0)
+    visitStructuredTemplateBody(context: StructuredTemplateBodyContext): void {
+        if (
+            !context.structuredBodyNameLine().errorStructuredName() &&
+            context.structuredBodyEndLine() &&
+            (!context.errorStructureLine() || context.errorStructureLine().length === 0) &&
+            context.structuredBodyContentLine() &&
+            context.structuredBodyContentLine().length > 0
         ) {
             const bodys = context.structuredBodyContentLine();
             for (const body of bodys) {
@@ -661,7 +674,7 @@ class TemplateBodyTransformer extends AbstractParseTreeVisitor<void> implements 
         if (structureValues.length === 1) {
             this._template.properties[key] = structureValues[0].text;
         } else if (structureValues.length > 1) {
-            this._template.properties[key] = structureValues.map(u => u.text);
+            this._template.properties[key] = structureValues.map((u) => u.text);
         }
     }
 }
