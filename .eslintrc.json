@@ -133,7 +133,9 @@
         "libraries/botbuilder-dialogs-adaptive-testing/**/*.ts",
         "libraries/botbuilder-dialogs-declarative/**/*.ts",
         "libraries/botbuilder-lg/**/*.ts",
-        "libraries/botbuilder-stdlib/**/*.ts"
+        "libraries/botbuilder-stdlib/**/*.ts",
+        "libraries/botbuilder-testing/**/*.ts",
+        "libraries/botframework-schema/**/*.ts"
       ],
       "rules": {
           "@typescript-eslint/explicit-member-accessibility": ["error", {"accessibility": "no-public"}]
