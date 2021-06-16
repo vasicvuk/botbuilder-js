@@ -13,10 +13,9 @@ import { ApplicationInsightsTelemetryClient, TelemetryInitializerMiddleware } fr
 import { BlobsStorage, BlobsTranscriptStore } from 'botbuilder-azure-blobs';
 import { ComponentDeclarativeTypes, ResourceExplorer } from 'botbuilder-dialogs-declarative';
 import { ConfigurationResourceExporer } from './configurationResourceExplorer';
-import { CoreBot } from './coreBot';
 import { CoreBotAdapter } from './coreBotAdapter';
 import { CosmosDbPartitionedStorage } from 'botbuilder-azure';
-import { DialogsBotComponent, MemoryScope, PathResolver } from 'botbuilder-dialogs';
+import { Dialog, DialogsBotComponent, MemoryScope, PathResolver } from 'botbuilder-dialogs';
 import { ServiceCollection } from 'botbuilder-dialogs-adaptive-runtime-core';
 
 import {
@@ -281,8 +280,10 @@ function addCoreBot(services: ServiceCollection, configuration: Configuration): 
     services.addFactory<
         ActivityHandlerBase,
         {
+            botFrameworkAuthentication: BotFrameworkAuthentication;
             botTelemetryClient: BotTelemetryClient;
             conversationState: ConversationState;
+            dialogs: Dialog[];
             memoryScopes: MemoryScope[];
             pathResolvers: PathResolver[];
             resourceExplorer: ResourceExplorer;
@@ -294,8 +295,10 @@ function addCoreBot(services: ServiceCollection, configuration: Configuration): 
     >(
         'bot',
         [
+            'botFrameworkAuthentication',
             'botTelemetryClient',
             'conversationState',
+            'dialogs',
             'memoryScopes',
             'pathResolvers',
             'resourceExplorer',
@@ -312,11 +315,11 @@ function addCoreBot(services: ServiceCollection, configuration: Configuration): 
                 dependencies.userState,
                 dependencies.skillConversationIdFactory,
                 dependencies.languagePolicy,
-                new BotFrameworkAuthentication(), //TODO extract, may depend on steven gumm's work
+                dependencies.botFrameworkAuthentication,
                 dependencies.botTelemetryClient,
                 dependencies.memoryScopes,
                 dependencies.pathResolvers,
-                [] // TODO extract,
+                dependencies.dialogs
             )
     );
 
@@ -511,6 +514,7 @@ export async function getRuntimeServices(
     const services = new ServiceCollection({
         customAdapters: new Map(),
         declarativeTypes: [],
+        dialogs: [],
         memoryScopes: [],
         middlewares: new MiddlewareSet(),
         pathResolvers: [],

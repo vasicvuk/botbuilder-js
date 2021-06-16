@@ -21,7 +21,7 @@ export class ConfigurationAdaptiveDialogBot extends AdaptiveDialogBot {
         userState: UserState,
         skillConversationIdFactoryBase: SkillConversationIdFactoryBase,
         languagePolicy: LanguagePolicy,
-        botFrameworkAuthentication: BotFrameworkAuthentication = BotFrameworkAuthenticationFactory.create(),
+        botFrameworkAuthentication: BotFrameworkAuthentication,
         telemetryClient: BotTelemetryClient = new TelemetryClient(),
         memoryScopes: MemoryScope[] = [],
         pathResolvers: PathResolver[] = [],
