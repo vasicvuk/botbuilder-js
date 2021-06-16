@@ -544,4 +544,4 @@ export async function getRuntimeServices(
     return [services, configuration];
 }
 
-export { Configuration };
+export { Configuration, ConfigurationConstants };
