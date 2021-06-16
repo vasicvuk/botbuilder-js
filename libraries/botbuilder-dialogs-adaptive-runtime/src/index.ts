@@ -4,7 +4,12 @@
 import * as t from 'runtypes';
 import fs from 'fs';
 import path from 'path';
+
 import { Configuration } from './configuration';
+import { ConfigurationAdaptiveDialogBot } from './configurationAdaptiveDialogBot';
+import { ConfigurationConstants } from './configurationConstants';
+import { ConfigurationResourceExporer } from './configurationResourceExplorer';
+import { CoreBotAdapter } from './coreBotAdapter';
 
 import LuisBotComponent from 'botbuilder-ai-luis';
 import QnAMakerBotComponent from 'botbuilder-ai-qna';
@@ -12,8 +17,6 @@ import { AdaptiveBotComponent, LanguageGenerationBotComponent, LanguagePolicy } 
 import { ApplicationInsightsTelemetryClient, TelemetryInitializerMiddleware } from 'botbuilder-applicationinsights';
 import { BlobsStorage, BlobsTranscriptStore } from 'botbuilder-azure-blobs';
 import { ComponentDeclarativeTypes, ResourceExplorer } from 'botbuilder-dialogs-declarative';
-import { ConfigurationResourceExporer } from './configurationResourceExplorer';
-import { CoreBotAdapter } from './coreBotAdapter';
 import { CosmosDbPartitionedStorage } from 'botbuilder-azure';
 import { Dialog, DialogsBotComponent, MemoryScope, PathResolver } from 'botbuilder-dialogs';
 import { ServiceCollection } from 'botbuilder-dialogs-adaptive-runtime-core';
@@ -57,8 +60,6 @@ import {
     assertBotComponent,
     createBotFrameworkAuthenticationFromConfiguration,
 } from 'botbuilder';
-import { ConfigurationAdaptiveDialogBot } from './configurationAdaptiveDialogBot';
-import { ConfigurationConstants } from './configurationConstants';
 
 function addFeatures(services: ServiceCollection, configuration: Configuration): void {
     services.composeFactory<

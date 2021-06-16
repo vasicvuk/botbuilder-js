@@ -1,6 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+import * as assert from 'assert';
+import { BotFrameworkAuthentication, BotFrameworkClientKey } from 'botframework-connector';
+import { Resource, ResourceExplorer, ResourceProvider } from 'botbuilder-dialogs-declarative';
+
 import {
     Activity,
     BotCallbackHandlerKey,
@@ -13,9 +17,7 @@ import {
     TurnContext,
     UserState,
 } from 'botbuilder-core';
-import { Resource, ResourceExplorer, ResourceProvider } from 'botbuilder-dialogs-declarative';
-import { BotFrameworkAuthentication, BotFrameworkClientKey } from 'botframework-connector';
-import * as assert from 'assert';
+
 import {
     AdaptiveDialog,
     AdaptiveDialogBot,
@@ -73,7 +75,7 @@ describe('AdaptiveDialogBot Tests', function () {
             telemetryClient
         );
 
-        await bot.onTurn(turnContext);
+        await bot.run(turnContext);
 
         assert.ok(turnContext.turnState.get(BotFrameworkClientKey));
         assert.ok(turnContext.turnState.get(skillConversationIdFactoryKey));
@@ -126,7 +128,7 @@ describe('AdaptiveDialogBot Tests', function () {
         );
 
         await assert.rejects(
-            bot.onTurn(turnContext),
+            bot.run(turnContext),
             new Error('The ResourceExplorer could not find a resource with id "main.dialog"')
         );
     });

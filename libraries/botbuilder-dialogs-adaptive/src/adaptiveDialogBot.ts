@@ -2,13 +2,17 @@
 // Licensed under the MIT License.
 
 import memoize from 'lodash/memoize';
+import { AdaptiveDialog } from './adaptiveDialog';
 import { BotFrameworkAuthentication, BotFrameworkClient, BotFrameworkClientKey } from 'botframework-connector';
 import { Dialog, MemoryScope, PathResolver, runDialog } from 'botbuilder-dialogs';
 import { LanguagePolicy } from './languagePolicy';
 import { ResourceExplorer } from 'botbuilder-dialogs-declarative';
+import { languageGeneratorKey, languageGeneratorManagerKey, languagePolicyKey } from './languageGeneratorExtensions';
+import { resourceExplorerKey } from './resourceExtensions';
+import { skillClientKey, skillConversationIdFactoryKey } from './skillExtensions';
 
 import {
-    ActivityHandlerBase,
+    ActivityHandler,
     BotCallbackHandlerKey,
     BotTelemetryClient,
     BotTelemetryClientKey,
@@ -17,22 +21,14 @@ import {
     TurnContext,
     UserState,
 } from 'botbuilder';
+
 import {
     LanguageGeneratorManager,
     ResourceMultiLanguageGenerator,
     TemplateEngineLanguageGenerator,
 } from './generators';
-import { skillConversationIdFactoryKey } from './skillExtensions';
-import { resourceExplorerKey } from './resourceExtensions';
-import { languageGeneratorKey, languageGeneratorManagerKey, languagePolicyKey } from './languageGeneratorExtensions';
-import { AdaptiveDialog } from '.';
 
-// TODO not this, figure out if we are standardizing on a particular bot interface instead of activity handler (base?)
-export interface Bot {
-    onTurn(turnContext: TurnContext): Promise<void>;
-}
-
-export class AdaptiveDialogBot extends ActivityHandlerBase implements Bot {
+export class AdaptiveDialogBot extends ActivityHandler {
     private static readonly languageGeneratorManagers = new Map<ResourceExplorer, LanguageGeneratorManager>();
 
     private readonly lazyRootDialog: () => Dialog;
@@ -54,42 +50,47 @@ export class AdaptiveDialogBot extends ActivityHandlerBase implements Bot {
         super();
 
         this.lazyRootDialog = memoize(() => this.createDialog());
+
+        this.onTurn(async (context, next) => {
+            const botFrameworkClient = this.botFrameworkAuthentication.createBotFrameworkClient();
+
+            // Set up the TurnState the Dialog is expecting.
+            this.setUpTurnState(context, botFrameworkClient);
+
+            // Load the Dialog from the ResourceExplorer - the actual load should only happen once.
+            const rootDialog = this.lazyRootDialog();
+
+            // Run the dialog.
+            await runDialog(
+                rootDialog,
+                context,
+                context.turnState.get<ConversationState>('ConversationState').createProperty('dialogState')
+            );
+
+            // Save any updates that have been made.
+            await context.turnState.get('ConversationState').saveChanges(context, false);
+            await context.turnState.get('UserState').saveChanges(context, false);
+
+            // Delegate to next stage in pipeline
+            await next();
+        });
     }
 
-    async onTurn(turnContext: TurnContext): Promise<void> {
-        const botFrameworkClient = this.botFrameworkAuthentication.createBotFrameworkClient();
+    private setUpTurnState(context: TurnContext, botFrameworkClient: BotFrameworkClient): void {
+        context.turnState.set(BotFrameworkClientKey, botFrameworkClient);
+        context.turnState.set(skillClientKey, botFrameworkClient);
 
-        // Set up the TurnState the Dialog is expecting.
-        this.setUpTurnState(turnContext, botFrameworkClient);
-
-        // Load the Dialog from the ResourceExplorer - the actual load should only happen once.
-        const rootDialog = await this.lazyRootDialog();
-
-        // Run the dialog.
-        await runDialog(
-            rootDialog,
-            turnContext,
-            turnContext.turnState.get<ConversationState>('ConversationState').createProperty('dialogState')
-        );
-
-        // Save any updates that have been made.
-        await turnContext.turnState.get('ConversationState').saveChanges(turnContext, false);
-        await turnContext.turnState.get('UserState').saveChanges(turnContext, false);
-    }
-
-    private setUpTurnState(turnContext: TurnContext, botFrameworkClient: BotFrameworkClient): void {
-        turnContext.turnState.set(BotFrameworkClientKey, botFrameworkClient);
-        turnContext.turnState.set(skillConversationIdFactoryKey, this.skillConversationIdFactoryBase);
-        turnContext.turnState.set('ConversationState', this.conversationState);
-        turnContext.turnState.set('UserState', this.userState);
-        turnContext.turnState.set(resourceExplorerKey, this.resourceExplorer);
-        turnContext.turnState.set('memoryScopes', this.memoryScopes);
-        turnContext.turnState.set('pathResolvers', this.pathResolvers);
+        context.turnState.set(skillConversationIdFactoryKey, this.skillConversationIdFactoryBase);
+        context.turnState.set('ConversationState', this.conversationState);
+        context.turnState.set('UserState', this.userState);
+        context.turnState.set(resourceExplorerKey, this.resourceExplorer);
+        context.turnState.set('memoryScopes', this.memoryScopes);
+        context.turnState.set('pathResolvers', this.pathResolvers);
 
         const languageGenerator = this.resourceExplorer.getResource(this.languageGeneratorId)
             ? new ResourceMultiLanguageGenerator(this.languageGeneratorId)
             : new TemplateEngineLanguageGenerator();
-        turnContext.turnState.set(languageGeneratorKey, languageGenerator);
+        context.turnState.set(languageGeneratorKey, languageGenerator);
 
         let manager: LanguageGeneratorManager;
         if (!AdaptiveDialogBot.languageGeneratorManagers.has(this.resourceExplorer)) {
@@ -98,11 +99,11 @@ export class AdaptiveDialogBot extends ActivityHandlerBase implements Bot {
         } else {
             manager = AdaptiveDialogBot.languageGeneratorManagers.get(this.resourceExplorer);
         }
-        turnContext.turnState.set(languageGeneratorManagerKey, manager);
+        context.turnState.set(languageGeneratorManagerKey, manager);
 
-        turnContext.turnState.set(languagePolicyKey, this.languagePolicy);
-        turnContext.turnState.set(BotTelemetryClientKey, this.telemetryClient);
-        turnContext.turnState.set(BotCallbackHandlerKey, this.onTurn);
+        context.turnState.set(languagePolicyKey, this.languagePolicy);
+        context.turnState.set(BotTelemetryClientKey, this.telemetryClient);
+        context.turnState.set(BotCallbackHandlerKey, this.onTurn);
     }
 
     private createDialog(): Dialog {
