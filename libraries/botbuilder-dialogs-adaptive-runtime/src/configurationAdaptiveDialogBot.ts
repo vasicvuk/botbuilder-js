@@ -3,13 +3,11 @@
 
 import { AdaptiveDialogBot, LanguagePolicy } from 'botbuilder-dialogs-adaptive';
 import { BotFrameworkAuthentication } from 'botframework-connector';
+import { BotTelemetryClient, ConversationState, SkillConversationIdFactoryBase, UserState } from 'botbuilder';
 import { Configuration } from './configuration';
+import { ConfigurationConstants } from './configurationConstants';
 import { Dialog, MemoryScope, PathResolver } from 'botbuilder-dialogs';
 import { ResourceExplorer } from 'botbuilder-dialogs-declarative';
-
-import { BotTelemetryClient, ConversationState, SkillConversationIdFactoryBase, UserState } from 'botbuilder';
-import { TelemetryClient } from 'applicationinsights';
-import { ConfigurationConstants } from './configurationConstants';
 
 const defaultLanguageGeneratorId = 'main.lg';
 
@@ -22,7 +20,7 @@ export class ConfigurationAdaptiveDialogBot extends AdaptiveDialogBot {
         skillConversationIdFactoryBase: SkillConversationIdFactoryBase,
         languagePolicy: LanguagePolicy,
         botFrameworkAuthentication: BotFrameworkAuthentication,
-        telemetryClient: BotTelemetryClient = new TelemetryClient(),
+        telemetryClient: BotTelemetryClient,
         memoryScopes: MemoryScope[] = [],
         pathResolvers: PathResolver[] = [],
         dialogs: Dialog[] = []

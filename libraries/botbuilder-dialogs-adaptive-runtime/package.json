@@ -28,7 +28,6 @@
     }
   },
   "dependencies": {
-    "applicationinsights": "^2.0.0",
     "botbuilder": "4.1.6",
     "botbuilder-ai-luis": "4.1.6",
     "botbuilder-ai-qna": "4.1.6",
