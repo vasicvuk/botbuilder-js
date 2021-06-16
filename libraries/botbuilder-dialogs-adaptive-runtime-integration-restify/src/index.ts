@@ -4,10 +4,9 @@
 import * as t from 'runtypes';
 import path from 'path';
 import restify from 'restify';
-import type { ActivityHandlerBase, BotFrameworkAdapter, ChannelServiceRoutes } from 'botbuilder';
+import type { ActivityHandlerBase, BotFrameworkHttpAdapter, ChannelServiceRoutes } from 'botbuilder';
 import { Configuration, ConfigurationConstants, getRuntimeServices } from 'botbuilder-dialogs-adaptive-runtime';
 import type { ServiceCollection } from 'botbuilder-dialogs-adaptive-runtime-core';
-import { Configuration, getRuntimeServices } from 'botbuilder-dialogs-adaptive-runtime';
 
 // Explicitly fails checks for `""`
 const NonEmptyString = t.String.withConstraint((str) => str.length > 0 || 'must be non-empty string');

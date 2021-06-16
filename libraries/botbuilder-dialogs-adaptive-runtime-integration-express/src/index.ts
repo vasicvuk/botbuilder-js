@@ -4,12 +4,10 @@
 import * as t from 'runtypes';
 import express from 'express';
 import path from 'path';
-import type { ActivityHandlerBase, BotFrameworkHttpAdapter, ChannelServiceRoutes } from 'botbuilder';
 import type { Server } from 'http';
-import type { ActivityHandlerBase, BotFrameworkAdapter, ChannelServiceRoutes } from 'botbuilder';
+import type { ActivityHandlerBase, BotFrameworkHttpAdapter, ChannelServiceRoutes } from 'botbuilder';
 import { Configuration, ConfigurationConstants, getRuntimeServices } from 'botbuilder-dialogs-adaptive-runtime';
 import type { ServiceCollection } from 'botbuilder-dialogs-adaptive-runtime-core';
-import { Configuration, getRuntimeServices } from 'botbuilder-dialogs-adaptive-runtime';
 import { json, urlencoded } from 'body-parser';
 
 // Explicitly fails checks for `""`
