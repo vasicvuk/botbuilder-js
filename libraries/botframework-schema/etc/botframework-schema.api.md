@@ -121,6 +121,7 @@ export namespace ActivityEx {
     export function createTrace(source: Activity, name: string, value?: unknown, valueType?: string, label?: string): ITraceActivity;
     export function createTraceActivity(name: string, valueType?: string, value?: unknown, label?: string): Partial<ITraceActivity>;
     export function createTypingActivity(): Partial<ITypingActivity>;
+    export function getContinuationActivity(reference: Partial<ConversationReference>): Partial<Activity>;
     export function getConversationReference(source: Partial<Activity>): ConversationReference;
     export function getMentions(source: Partial<Activity>): Mention[];
     export function hasContent(source: Partial<Activity>): boolean;
@@ -192,10 +193,7 @@ export enum ActivityTypes {
 }
 
 // @public
-export interface AdaptiveCardAuthentication {
-    connectionName: string;
-    id: string;
-    token: string;
+export interface AdaptiveCardAuthentication extends TokenExchangeInvokeRequest {
 }
 
 // @public
@@ -403,9 +401,9 @@ export interface ChannelInfo {
 // @public
 export enum Channels {
     // (undocumented)
-    Console = "console",
+    Alexa = "alexa",
     // (undocumented)
-    Cortana = "cortana",
+    Console = "console",
     // (undocumented)
     Directline = "directline",
     // (undocumented)
@@ -876,6 +874,38 @@ export interface MediaUrl {
 export interface Meeting {
     inMeeting?: boolean;
     role?: string;
+}
+
+// Warning: (ae-forgotten-export) The symbol "MeetingDetailsBase" needs to be exported by the entry point index.d.ts
+//
+// @public
+export interface MeetingDetails extends MeetingDetailsBase {
+    msGraphResourceId: string;
+    scheduledEndTime: Date;
+    scheduledStartTime: Date;
+    type: string;
+}
+
+// @public
+export interface MeetingEndEventDetails extends MeetingEventDetails {
+    endTime: Date;
+}
+
+// @public (undocumented)
+export interface MeetingEventDetails extends MeetingDetailsBase {
+    meetingType: string;
+}
+
+// @public
+export interface MeetingInfo {
+    conversation: ConversationAccount;
+    details: MeetingDetails;
+    organizer: TeamsChannelAccount;
+}
+
+// @public
+export interface MeetingStartEventDetails extends MeetingEventDetails {
+    startTime: Date;
 }
 
 // @public
@@ -1426,6 +1456,8 @@ export enum StatusCodes {
     BAD_REQUEST = 400,
     // (undocumented)
     CONFLICT = 409,
+    // (undocumented)
+    CREATED = 201,
     // (undocumented)
     INTERNAL_SERVER_ERROR = 500,
     // (undocumented)

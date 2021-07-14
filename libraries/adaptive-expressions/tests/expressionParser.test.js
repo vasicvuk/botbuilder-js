@@ -361,7 +361,8 @@ const testCases = [
             ['equals(max(createArray(1,2,3,4), 5.0), 5)', true],
             ['equals(bag.index, 2)', false],
             ['equals(hello == \'world\', bool(\'true\'))', false],
-            ['equals(hello == \'world\', bool(0))', false],
+            ['equals(hello == \'world\', bool(0))', true],
+            ['equals(hello == \'world\', bool(1))', false],
             ['if(!exists(one), \'r1\', \'r2\')', 'r2'],
             ['if(!!exists(one), \'r1\', \'r2\')', 'r1'],
             ['if(0, \'r1\', \'r2\')', 'r1'],
@@ -430,7 +431,7 @@ const testCases = [
             ['string(bool(1))', 'true'],
             ['string(bag.set)', '{"four":4}'], // ts-->"{\"four\":4}", C# --> "{\"four\":4.0}"
             ['bool(1)', true],
-            ['bool(0)', true],
+            ['bool(0)', false],
             ['bool(null)', false],
             ['bool(hello * 5)', false],
             ['bool(\'false\')', true], // we make it true, because it is not empty
@@ -438,7 +439,7 @@ const testCases = [
             ['[1,2,3]', [1, 2, 3]],
             ['[1,2,3, [4,5]]', [1, 2, 3, [4, 5]]],
             ['"[1,2,3]"', '[1,2,3]'],
-            ['[1, bool(0), string(bool(1)), float(\'10\')]', [1, true, 'true', 10.0]],
+            ['[1, bool(0), string(bool(1)), float(\'10\')]', [1, false, 'true', 10.0]],
             ['[\'a\', \'b[]\', \'c[][][]\'][1]', 'b[]'],
             ['[\'a\', [\'b\', \'c\']][1][0]', 'b'],
             ['union(["a", "b", "c"], ["d", ["e", "f"], "g"][1])', ['a', 'b', 'c', 'e', 'f']],
@@ -446,7 +447,7 @@ const testCases = [
             ['createArray(\'h\', \'e\', \'l\', \'l\', \'o\')', ['h', 'e', 'l', 'l', 'o']],
             ['createArray()', []],
             ['[]', []],
-            ['createArray(1, bool(0), string(bool(1)), float(\'10\'))', [1, true, 'true', 10.0]],
+            ['createArray(1, bool(0), string(bool(1)), float(\'10\'))', [1, false, 'true', 10.0]],
             ['binary(hello)', new Uint8Array([104, 101, 108, 108, 111])],
             ['dataUri(hello)', 'data:text/plain;charset=utf-8;base64,aGVsbG8='],
             ['count(binary(hello))', 5],
@@ -776,6 +777,9 @@ const testCases = [
             ['jPath(jsonStr, \'.automobiles[0].maker\' )', ['Nissan']],
             ['string(merge(json1, json2))', '{"FirstName":"John","LastName":"Smith","Enabled":true,"Roles":["Customer","Admin"]}'],
             ['string(merge(json1, json2, json3))', '{"FirstName":"John","LastName":"Smith","Enabled":true,"Roles":["Customer","Admin"],"age":36}'],
+            ['merge(callstack[1], callstack[2]).z', 1],
+            ['merge(callstack).z', 1],
+            ['string(merge({k1:\'v1\'}, [{k2:\'v2\'}, {k3: \'v3\'}], {k4:\'v4\'}))', '{"k1":"v1","k2":"v2","k3":"v3","k4":"v4"}'],
             [
                 'xml(\'{"person": {"name": "Sophia Owen", "city": "Seattle"}}\')',
                 '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<person>\n  <name>Sophia Owen</name>\n  <city>Seattle</city>\n</person>',
@@ -1023,6 +1027,32 @@ const scope = {
     doubleNestedItems: [[{ x: 1 }, { x: 2 }], [{ x: 3 }]],
     xmlStr:
         "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>",
+    callStack: [
+        {
+            x: 3,
+            instance: {
+                xxx: 'instance',
+                yyy: {
+                    instanceY: 'instanceY',
+                },
+            },
+            options: {
+                xxx: 'options',
+                yyy: ['optionY1', 'optionY2'],
+            },
+            title: 'Dialog Title',
+            subTitle: 'Dialog Sub Title',
+        },
+        {
+            x: 2,
+            y: 2,
+        },
+        {
+            x: 1,
+            y: 1,
+            z: 1,
+        },
+    ],
 };
 
 const generateParseTest = (input, expectedOutput, expectedRefs) => () => {
