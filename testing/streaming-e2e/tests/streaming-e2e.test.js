@@ -12,7 +12,7 @@ const reactAppEndpoint = 'http://localhost:3000';
 
 describe('Chrome', function () {
   it('should receive an echo after sending a message', async function () {
-    this.timeout(120000);
+    this.timeout(300000);
 
     const driver = createDriver('chrome');
     await echoMessageInBrowser(driver);

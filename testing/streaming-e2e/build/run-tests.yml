@@ -17,8 +17,8 @@ steps:
     condition: ne(variables.CacheRestored, 'true')
     workingDirectory: $(TestsDir)
 
-  - powershell: Start-Sleep -Seconds 20
-    displayName: 'Sleeping for 20 seconds to allow React App to serve...'
+  - powershell: Start-Sleep -Seconds 120
+    displayName: 'Sleeping for 120 seconds to allow React App to serve...'
   
   - powershell: npm test
     displayName: 'npm test'
